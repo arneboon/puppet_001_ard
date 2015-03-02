@@ -61,15 +61,11 @@ class SensorButton: public SensorDigital {
     
 public:
     
-    SensorButton();
-    
     void loop();
     void read();
     
 private:
-    
-    void bounce();
-    uint8_t pValue;
+
     
 };
 

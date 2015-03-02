@@ -25,7 +25,7 @@ SensorAnalog::SensorAnalog() {
 
 void SensorAnalog::loop() {
     this->read();
-    this->print();
+    this->send();
 }
 
 void SensorAnalog::read() {

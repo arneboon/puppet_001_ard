@@ -19,30 +19,18 @@
 
 #include "SensorButton.h"
 
-SensorButton::SensorButton() {
-    this->raw = 0;
-}
-
 void SensorButton::loop() {
     this->read();
-    this->bounce();
+    
+    if (this->bOnChange) {
+        this->onChange();
+    } else {
+        this->send();
+    }
+    
 }
 
 void SensorButton::read() {
     this->raw = !digitalRead(this->pin);
     this->value = this->raw;
 }
-
-void SensorButton::bounce() {
-    if (this->value != this->pValue) {
-//        this->print();
-        this->send();
-        if (this->value == HIGH) {
-            //--on
-        } else {
-            //--off
-        }
-    }
-    this->pValue = this->value;
-}
-

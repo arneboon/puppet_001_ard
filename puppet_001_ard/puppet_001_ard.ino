@@ -107,6 +107,14 @@ void setup()
     btn3.setup("/button/3", PIN_BTN_3, INPUT_PULLUP);
     btn4.setup("/button/4", PIN_BTN_4, INPUT_PULLUP);
     
+    magnetAnalog.broadcast(false);
+    magnetDigital.broadcast(true);
+    nineDof.broadcast(false);
+    btn1.broadcast(true);
+    btn2.broadcast(true);
+    btn3.broadcast(true);
+    btn4.broadcast(true);
+    
     wifiShield.setup(SSID, PASS);
     
     Udp.begin(8888);
@@ -114,9 +122,9 @@ void setup()
 
 //-------------------------------------------------
 void loop() {
-    //    magnetAnalog.loop();
-    //    magnetDigital.loop();
-    //    nineDof.loop();
+    magnetAnalog.loop();
+    magnetDigital.loop();
+    nineDof.loop();
     btn1.loop();
     btn2.loop();
     btn3.loop();

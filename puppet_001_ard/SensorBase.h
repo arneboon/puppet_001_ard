@@ -77,6 +77,7 @@
 #ifndef SensorBase_CLASS
 #define SensorBase_CLASS 100
 
+#define OSC_OUT_IP {192, 168, 1, 67}
 #define OSC_OUT_PORT 9999
 
 #include <Arduino.h>
@@ -97,9 +98,8 @@ public:
     void printRaw();
     void print();
     
-    void start();
-    void stop();
-    void toggle();
+    void broadcast(bool _bBroadcast);
+    void toggleBroadcast();
 
     void setAddress(String _address);
     
@@ -117,12 +117,13 @@ protected:
     uint8_t value;
     
     WiFiUDP Udp;
-//    IPAddress outIp(192, 168, 1, 67);
-    uint8_t outPort;
+    IPAddress outIp;
+    uint16_t outPort;
     
     String address;
     OSCMessage msg;
     
+    bool bBroadcast;
 };
 
 

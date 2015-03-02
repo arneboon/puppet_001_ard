@@ -21,14 +21,40 @@
 
 SensorDigital::SensorDigital() {
     this->raw = 0;
+    this->pValue = 0;
+    this->bOnChange = true;
 }
 
 void SensorDigital::loop() {
     this->read();
-    this->print();
+    
+    if (this->bOnChange) {
+        this->onChange();
+    } else {
+        this->send();
+    }
+    
 }
 
 void SensorDigital::read() {
+    /* TODO:
+     * merge button class with sensordigital by inverting the reading so that press is HIGH
+     * this->raw = !digitalRead(this->pin);
+     * use struct readMode: NORMALLY_OPEN, NORMALLY_CLOSED on sensorDigital as function
+     */
+    
     this->raw = digitalRead(this->pin);
     this->value = this->raw;
+}
+
+void SensorDigital::onChange() {
+    if (this->value != this->pValue) {
+        this->send();
+        if (this->value == HIGH) {
+            //--on
+        } else {
+            //--off
+        }
+    }
+    this->pValue = this->value;
 }

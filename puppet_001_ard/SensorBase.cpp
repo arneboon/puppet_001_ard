@@ -20,7 +20,9 @@
 #include "SensorBase.h"
 
 SensorBase::SensorBase() {
+    this->outIp = OSC_OUT_IP;
     this->outPort = OSC_OUT_PORT;
+    this->bBroadcast = false;
 }
 
 void SensorBase::setup(String _address, uint8_t _pin, uint8_t _mode) {
@@ -55,33 +57,28 @@ void SensorBase::print() {
 }
 
 void SensorBase::send() {
-    Serial.print("send: ");
-    Serial.print(this->address);
-    Serial.print(" ");
-    Serial.println(this->value);
-    
-    msg.empty();
-    msg.add((int8_t) this->value);
-    
-    IPAddress outIp(192, 168, 1, 67);
-    
-//    Udp.beginPacket(outIp, this->outPort);
-    Udp.beginPacket(outIp, 9999);
-    msg.send(Udp);
-    Udp.endPacket();
-    msg.empty();
+    if (this->bBroadcast) {
+        Serial.print("send: ");
+        Serial.print(this->address);
+        Serial.print(" ");
+        Serial.println(this->value);
+        
+        msg.empty();
+        msg.add((int8_t) this->value);
+        
+        Udp.beginPacket(this->outIp, this->outPort);
+        msg.send(Udp);
+        Udp.endPacket();
+        msg.empty();
+    }
 }
 
-void SensorBase::start() {
-    
+void SensorBase::broadcast(bool _bBroadcast) {
+    this->bBroadcast = _bBroadcast;
 }
 
-void SensorBase::stop() {
-    
-}
-
-void SensorBase::toggle() {
-    
+void SensorBase::toggleBroadcast() {
+    this->bBroadcast = !this->bBroadcast;
 }
 
 void SensorBase::setAddress(String _address) {

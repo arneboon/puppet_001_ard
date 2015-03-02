@@ -65,8 +65,14 @@ public:
     
     void loop();
     void read();
+
+    void setOnChange(bool _bOnChange) { this->bOnChange = _bOnChange; };
     
-private:
+protected:
+    
+    void onChange();
+    bool bOnChange;
+    uint8_t pValue;
     
 };
 

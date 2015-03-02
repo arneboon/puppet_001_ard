@@ -66,7 +66,7 @@ public:
     void loop();
     void read();
     
-private:
+protected:
     
 };
 
