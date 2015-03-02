@@ -76,6 +76,8 @@
 #define SSID "HG655D-A14F3D"
 #define PASS "PU7LAKLW"
 
+#define DELAY 100
+
 
 //-------------------------------------------------
 WifiShield wifiShield;
@@ -96,9 +98,6 @@ void setup()
     Serial.begin(9600);
     Serial.println("setup");
     
-    pinMode(PIN_LED, OUTPUT);
-    digitalWrite(PIN_LED, HIGH);
-    
     magnetAnalog.setup("/magnet/analog", PIN_MANGNET_ANALOG, INPUT);
     magnetDigital.setup("/magnet/digital", PIN_MAGNET_DIGITAL, INPUT_PULLUP);
     nineDof.setup("/9dof", PIN_NINEDOF_SDA, PIN_NINEDOF_SLC);
@@ -118,6 +117,9 @@ void setup()
     wifiShield.setup(SSID, PASS);
     
     Udp.begin(8888);
+    
+    pinMode(PIN_LED, OUTPUT);
+    digitalWrite(PIN_LED, HIGH);
 }
 
 //-------------------------------------------------
@@ -130,5 +132,5 @@ void loop() {
     btn3.loop();
     btn4.loop();
     
-    delay(100);
+    delay(DELAY);
 }
