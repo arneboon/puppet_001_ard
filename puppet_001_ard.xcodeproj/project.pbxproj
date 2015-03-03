@@ -15,6 +15,7 @@
 		1454A3091AA3909400834EB0 /* SensorDigital.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1454A3001AA3909400834EB0 /* SensorDigital.cpp */; };
 		1454A30A1AA3909400834EB0 /* SensorI2C.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1454A3021AA3909400834EB0 /* SensorI2C.cpp */; };
 		1454A30B1AA3909400834EB0 /* WifiShield.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1454A3041AA3909400834EB0 /* WifiShield.cpp */; };
+		14FC2D971AA63A7800518103 /* SensorDistance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14FC2D951AA63A7800518103 /* SensorDistance.cpp */; };
 		AAA2150301192118AA000006 /* abi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAAA150301192118AA000006 /* abi.cpp */; };
 		AAA2150301192118AA000007 /* Arduino.h in Sources */ = {isa = PBXBuildFile; fileRef = AAAA150301192118AA000007 /* Arduino.h */; };
 		AAA2150301192118AA000008 /* binary.h in Sources */ = {isa = PBXBuildFile; fileRef = AAAA150301192118AA000008 /* binary.h */; };
@@ -1127,6 +1128,8 @@
 		1454A3031AA3909400834EB0 /* SensorI2C.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorI2C.h; sourceTree = "<group>"; };
 		1454A3041AA3909400834EB0 /* WifiShield.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WifiShield.cpp; sourceTree = "<group>"; };
 		1454A3051AA3909400834EB0 /* WifiShield.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WifiShield.h; sourceTree = "<group>"; };
+		14FC2D951AA63A7800518103 /* SensorDistance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SensorDistance.cpp; sourceTree = "<group>"; };
+		14FC2D961AA63A7800518103 /* SensorDistance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorDistance.h; sourceTree = "<group>"; };
 		AAAA150301192118AA000006 /* abi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = abi.cpp; sourceTree = "<group>"; };
 		AAAA150301192118AA000007 /* Arduino.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Arduino.h; sourceTree = "<group>"; };
 		AAAA150301192118AA000008 /* binary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = binary.h; sourceTree = "<group>"; };
@@ -2131,6 +2134,8 @@
 			children = (
 				1454A2551AA38FB200834EB0 /* main.cpp */,
 				1454A2D31AA38FB400834EB0 /* puppet_001_ard.ino */,
+				1454A3041AA3909400834EB0 /* WifiShield.cpp */,
+				1454A3051AA3909400834EB0 /* WifiShield.h */,
 				1454A2FC1AA3909300834EB0 /* SensorBase.cpp */,
 				1454A2FD1AA3909300834EB0 /* SensorBase.h */,
 				1454A2FA1AA3909300834EB0 /* SensorAnalog.cpp */,
@@ -2141,8 +2146,8 @@
 				143EE56B1AA506AA00CCB151 /* SensorButton.h */,
 				1454A3021AA3909400834EB0 /* SensorI2C.cpp */,
 				1454A3031AA3909400834EB0 /* SensorI2C.h */,
-				1454A3041AA3909400834EB0 /* WifiShield.cpp */,
-				1454A3051AA3909400834EB0 /* WifiShield.h */,
+				14FC2D951AA63A7800518103 /* SensorDistance.cpp */,
+				14FC2D961AA63A7800518103 /* SensorDistance.h */,
 				1454A25A1AA38FB300834EB0 /* Makefile */,
 				1454A25C1AA38FB300834EB0 /* ReadMe.txt */,
 				1454A25D1AA38FB300834EB0 /* Sketchbook */,
@@ -5652,6 +5657,7 @@
 				AAA2150301192118AA00014B /* Sensors.cpp in Sources */,
 				AAA2150301192118AA00014C /* Squawk.cpp in Sources */,
 				AAA2150301192118AA00014D /* Squawk.h in Sources */,
+				14FC2D971AA63A7800518103 /* SensorDistance.cpp in Sources */,
 				AAA2150301192118AA00014E /* SquawkSD.cpp in Sources */,
 				AAA2150301192118AA00014F /* SquawkSD.h in Sources */,
 				AAA2150301192118AA000151 /* Adafruit_GFX.cpp in Sources */,

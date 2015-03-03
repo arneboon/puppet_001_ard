@@ -20,8 +20,19 @@
 #include "SensorBase.h"
 
 SensorBase::SensorBase() {
+    this->pin = 0;
+    this->mode = 0;
+    
+    this->raw = 0;
+    this->value = 0;
+    this->pValue = 0;
+    
     this->outIp = OSC_OUT_IP;
     this->outPort = OSC_OUT_PORT;
+    
+    this->address = "/";
+    
+    this->bOnChange = true;
     this->bBroadcast = false;
 }
 
@@ -71,6 +82,18 @@ void SensorBase::send() {
         Udp.endPacket();
         msg.empty();
     }
+}
+
+void SensorBase::onChange() {
+    if (this->value != this->pValue) {
+        this->send();
+//        if (this->value == HIGH) {
+//            //--on
+//        } else {
+//            //--off
+//        }
+    }
+    this->pValue = this->value;
 }
 
 void SensorBase::broadcast(bool _bBroadcast) {

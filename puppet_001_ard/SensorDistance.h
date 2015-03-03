@@ -1,17 +1,17 @@
 ///
-/// @file		SensorDigital_h_.h
-/// @brief		Class library header
+/// @file		SensorDistance_h_.h
+/// @brief		Library header
 /// @details	<#details#>
-/// @n
+/// @n	
 /// @n @b		Project puppet_001_ard
 /// @n @a		Developed with [embedXcode+](http://embedXcode.weebly.com)
-///
+/// 
 /// @author		Arne Boon
 /// @author		Studio Arne Boon
 ///
-/// @date		28/02/15 15:48
+/// @date		03/03/15 19:52
 /// @version	<#version#>
-///
+/// 
 /// @copyright	(c) Arne Boon, 2015
 /// @copyright	<#license#>
 ///
@@ -51,22 +51,32 @@
 #error Platform not defined
 #endif // end IDE
 
-#ifndef SensorDigital_CLASS
-#define SensorDigital_CLASS
+#ifndef SensorDistance_CLASS
+#define SensorDistance_CLASS
 
 #include <Arduino.h>
 #include "SensorBase.h"
+#include "NewPing.h"
 
-class SensorDigital: public SensorBase {
+class SensorDistance: public SensorBase {
     
 public:
     
+    SensorDistance();
+    
+    void setup(String _address, uint8_t _pinTrigger, uint8_t _pinEcho, unsigned int _maxDistance);
     void loop();
     void read();
     
+    void setMaxDistance(uint8_t _maxDistance) { this->maxDistance = _maxDistance; };
+    
 protected:
     
+    NewPing *sonar;
     
+    uint8_t pinTrigger;
+    uint8_t pinEcho;
+    unsigned int maxDistance;
     
 };
 

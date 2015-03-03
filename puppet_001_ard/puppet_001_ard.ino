@@ -59,6 +59,7 @@
 #include "SensorDigital.h"
 #include "SensorButton.h"
 #include "SensorI2C.h"
+#include "SensorDistance.h"
 
 #include <WiFiUdp.h>
 
@@ -72,12 +73,19 @@
 #define PIN_BTN_2 3
 #define PIN_BTN_3 5
 #define PIN_BTN_4 6
+#define PIN_DISTANCE_TRIGGER 8
+#define PIN_DISTANCE_ECHO 9
 
 #define SSID "HG655D-A14F3D"
-#define PASS "PU7LAKLW"
+#define PASS ""
 
-#define DELAY 100
+#define DISTANCE_MAX_CM 400
 
+/* NOTE
+ * SensorDistance: Wait 50ms between pings (about 20 pings/sec). 
+ *  29ms should be the shortest delay between pings.
+ */
+#define DELAY 50
 
 //-------------------------------------------------
 WifiShield wifiShield;
@@ -89,6 +97,7 @@ SensorButton btn1;
 SensorButton btn2;
 SensorButton btn3;
 SensorButton btn4;
+SensorDistance distance;
 
 WiFiUDP Udp;
 
@@ -96,6 +105,9 @@ WiFiUDP Udp;
 void setup()
 {   
     Serial.begin(9600);
+    Serial.flush();
+    delay(50);
+    Serial.println("----------------");
     Serial.println("setup");
     
     magnetAnalog.setup("/magnet/analog", PIN_MANGNET_ANALOG, INPUT);
@@ -105,6 +117,7 @@ void setup()
     btn2.setup("/button/2", PIN_BTN_2, INPUT_PULLUP);
     btn3.setup("/button/3", PIN_BTN_3, INPUT_PULLUP);
     btn4.setup("/button/4", PIN_BTN_4, INPUT_PULLUP);
+    distance.setup("/distance/", PIN_DISTANCE_TRIGGER, PIN_DISTANCE_ECHO, DISTANCE_MAX_CM);
     
     magnetAnalog.broadcast(false);
     magnetDigital.broadcast(true);
@@ -113,6 +126,7 @@ void setup()
     btn2.broadcast(true);
     btn3.broadcast(true);
     btn4.broadcast(true);
+    distance.broadcast(true);
     
     wifiShield.setup(SSID, PASS);
     
@@ -131,6 +145,7 @@ void loop() {
     btn2.loop();
     btn3.loop();
     btn4.loop();
+//    distance.loop();
     
     delay(DELAY);
 }

@@ -98,6 +98,8 @@ public:
     void printRaw();
     void print();
     
+    void setOnChange(bool _bOnChange) { this->bOnChange = _bOnChange; };
+    
     void broadcast(bool _bBroadcast);
     void toggleBroadcast();
 
@@ -115,6 +117,7 @@ protected:
     
     uint8_t raw;
     uint8_t value;
+    uint8_t pValue;
     
     WiFiUDP Udp;
     IPAddress outIp;
@@ -122,6 +125,9 @@ protected:
     
     String address;
     OSCMessage msg;
+    
+    void onChange();
+    bool bOnChange;
     
     bool bBroadcast;
 };

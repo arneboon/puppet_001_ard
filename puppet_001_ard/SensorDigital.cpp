@@ -19,12 +19,6 @@
 
 #include "SensorDigital.h"
 
-SensorDigital::SensorDigital() {
-    this->raw = 0;
-    this->pValue = 0;
-    this->bOnChange = true;
-}
-
 void SensorDigital::loop() {
     this->read();
     
@@ -45,16 +39,4 @@ void SensorDigital::read() {
     
     this->raw = digitalRead(this->pin);
     this->value = this->raw;
-}
-
-void SensorDigital::onChange() {
-    if (this->value != this->pValue) {
-        this->send();
-        if (this->value == HIGH) {
-            //--on
-        } else {
-            //--off
-        }
-    }
-    this->pValue = this->value;
 }
