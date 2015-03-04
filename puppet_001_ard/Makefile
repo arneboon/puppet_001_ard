@@ -26,7 +26,7 @@
 #	Robot_Control Robot_Motor RobotIRremote Scheduler SD Servo 
 #	SpacebrewYun Stepper Temboo TFT USBHost WiFi 
 #
-APP_LIBS_LIST = SPI WiFi
+APP_LIBS_LIST = SPI WiFi Wire
 
 # List user's libraries here 
 # default = 0 = none
@@ -39,7 +39,7 @@ APP_LIBS_LIST = SPI WiFi
 #	Serial_7_Seg_v2 SFE_CC3000 SimpleTimer Streaming TimedEvent 
 #	USB_Host_Shield VirtualWire XBee 
 #
-USER_LIBS_LIST = Adafruit_9DOF Adafruit_L3GD20_U Adafruit_LSM303DLHC Adafruit_Sensor OSC NewPing SimpleTimer
+USER_LIBS_LIST = Adafruit_9DOF Adafruit_L3GD20_U Adafruit_LSM303DLHC Adafruit_Sensor OSC NewPing
 
 # List local libraries here
 # default = empty = all

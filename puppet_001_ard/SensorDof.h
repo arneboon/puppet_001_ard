@@ -57,11 +57,17 @@
 #include <Arduino.h>
 #include "SensorBase.h"
 
-class SensorI2C: public SensorBase {
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_LSM303_U.h>
+#include <Adafruit_9DOF.h>
+#include <Adafruit_L3GD20_U.h>
+
+class SensorDof: public SensorBase {
     
 public:
     
-    SensorI2C();
+    SensorDof();
     
     void setup(String _address, uint8_t _sda, uint8_t _slc);
     
@@ -73,6 +79,21 @@ private:
     uint8_t sda;
     uint8_t slc;
     
+    Adafruit_9DOF *dof;
+    Adafruit_LSM303_Accel_Unified *accel;
+    Adafruit_LSM303_Mag_Unified *mag;
+    
+    float seaLevelPressure;
+    
+    void init();
+    
+    bool bConnectedAccel;
+    bool bConnectedMag;
+    
+    sensors_event_t accel_event;
+    sensors_event_t mag_event;
+    sensors_event_t mag_event_compensated;
+    sensors_vec_t   orientation; //x.roll, x.pitch, x.heading
 };
 
 

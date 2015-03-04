@@ -30,10 +30,15 @@ void SensorDistance::setup(String _address, uint8_t _pinTrigger, uint8_t _pinEch
     this->pinEcho = _pinEcho;
     this->maxDistance = _maxDistance;
     
+    Serial.print("add sensor: ");
+    Serial.println(this->address);
+    
+    /*
     Serial.print("pin trigger: ");
     Serial.println(this->pinTrigger);
     Serial.print("pin echo: ");
     Serial.println(this->pinEcho);
+    */
     
     this->sonar = new NewPing(this->pinTrigger, this->pinEcho, this->maxDistance);
 }

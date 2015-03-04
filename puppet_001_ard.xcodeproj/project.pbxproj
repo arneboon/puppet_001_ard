@@ -13,7 +13,7 @@
 		1454A3061AA3909400834EB0 /* SensorAnalog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1454A2FA1AA3909300834EB0 /* SensorAnalog.cpp */; };
 		1454A3071AA3909400834EB0 /* SensorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1454A2FC1AA3909300834EB0 /* SensorBase.cpp */; };
 		1454A3091AA3909400834EB0 /* SensorDigital.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1454A3001AA3909400834EB0 /* SensorDigital.cpp */; };
-		1454A30A1AA3909400834EB0 /* SensorI2C.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1454A3021AA3909400834EB0 /* SensorI2C.cpp */; };
+		1454A30A1AA3909400834EB0 /* SensorDof.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1454A3021AA3909400834EB0 /* SensorDof.cpp */; };
 		1454A30B1AA3909400834EB0 /* WifiShield.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1454A3041AA3909400834EB0 /* WifiShield.cpp */; };
 		14FC2D971AA63A7800518103 /* SensorDistance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14FC2D951AA63A7800518103 /* SensorDistance.cpp */; };
 		AAA2150301192118AA000006 /* abi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAAA150301192118AA000006 /* abi.cpp */; };
@@ -1124,8 +1124,8 @@
 		1454A2FD1AA3909300834EB0 /* SensorBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorBase.h; sourceTree = "<group>"; };
 		1454A3001AA3909400834EB0 /* SensorDigital.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SensorDigital.cpp; sourceTree = "<group>"; };
 		1454A3011AA3909400834EB0 /* SensorDigital.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorDigital.h; sourceTree = "<group>"; };
-		1454A3021AA3909400834EB0 /* SensorI2C.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SensorI2C.cpp; sourceTree = "<group>"; };
-		1454A3031AA3909400834EB0 /* SensorI2C.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorI2C.h; sourceTree = "<group>"; };
+		1454A3021AA3909400834EB0 /* SensorDof.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SensorDof.cpp; sourceTree = "<group>"; };
+		1454A3031AA3909400834EB0 /* SensorDof.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorDof.h; sourceTree = "<group>"; };
 		1454A3041AA3909400834EB0 /* WifiShield.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WifiShield.cpp; sourceTree = "<group>"; };
 		1454A3051AA3909400834EB0 /* WifiShield.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WifiShield.h; sourceTree = "<group>"; };
 		14FC2D951AA63A7800518103 /* SensorDistance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SensorDistance.cpp; sourceTree = "<group>"; };
@@ -2144,8 +2144,8 @@
 				1454A3011AA3909400834EB0 /* SensorDigital.h */,
 				143EE56A1AA506AA00CCB151 /* SensorButton.cpp */,
 				143EE56B1AA506AA00CCB151 /* SensorButton.h */,
-				1454A3021AA3909400834EB0 /* SensorI2C.cpp */,
-				1454A3031AA3909400834EB0 /* SensorI2C.h */,
+				1454A3021AA3909400834EB0 /* SensorDof.cpp */,
+				1454A3031AA3909400834EB0 /* SensorDof.h */,
 				14FC2D951AA63A7800518103 /* SensorDistance.cpp */,
 				14FC2D961AA63A7800518103 /* SensorDistance.h */,
 				1454A25A1AA38FB300834EB0 /* Makefile */,
@@ -5463,7 +5463,7 @@
 				AAA2150301192118AA00006A /* Print.h in Sources */,
 				AAA2150301192118AA00006B /* Printable.h in Sources */,
 				AAA2150301192118AA00006C /* Reset.cpp in Sources */,
-				1454A30A1AA3909400834EB0 /* SensorI2C.cpp in Sources */,
+				1454A30A1AA3909400834EB0 /* SensorDof.cpp in Sources */,
 				AAA2150301192118AA00006D /* Reset.h in Sources */,
 				AAA2150301192118AA00006E /* RingBuffer.cpp in Sources */,
 				AAA2150301192118AA00006F /* RingBuffer.h in Sources */,

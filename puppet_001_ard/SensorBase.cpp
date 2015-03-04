@@ -41,6 +41,9 @@ void SensorBase::setup(String _address, uint8_t _pin, uint8_t _mode) {
     this->mode = _mode;
     this->address = _address;
     
+    Serial.print("add sensor: ");
+    Serial.println(this->address);
+    
     pinMode(this->pin, this->mode);
     
     char address[this->address.length() + 1];
