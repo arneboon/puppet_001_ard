@@ -58,8 +58,8 @@
 #include "SensorAnalog.h"
 #include "SensorDigital.h"
 #include "SensorButton.h"
-#include "SensorI2C.h"
 #include "SensorDistance.h"
+#include "SensorDof.h"
 
 #include <WiFiUdp.h>
 
@@ -92,12 +92,12 @@ WifiShield wifiShield;
 
 SensorDigital magnetDigital;
 SensorAnalog magnetAnalog;
-SensorI2C nineDof;
 SensorButton btn1;
 SensorButton btn2;
 SensorButton btn3;
 SensorButton btn4;
 SensorDistance distance;
+SensorDof dof;
 
 WiFiUDP Udp;
 
@@ -116,8 +116,8 @@ void setup()
     btn2.setup("/button/2", PIN_BTN_2, INPUT_PULLUP);
     btn3.setup("/button/3", PIN_BTN_3, INPUT_PULLUP);
     btn4.setup("/button/4", PIN_BTN_4, INPUT_PULLUP);
-    distance.setup("/distance/", PIN_DISTANCE_TRIGGER, PIN_DISTANCE_ECHO, DISTANCE_MAX_CM);
-    nineDof.setup("/9dof", PIN_NINEDOF_SDA, PIN_NINEDOF_SLC);
+    distance.setup("/distance", PIN_DISTANCE_TRIGGER, PIN_DISTANCE_ECHO, DISTANCE_MAX_CM);
+    dof.setup("/dof/rph", PIN_NINEDOF_SDA, PIN_NINEDOF_SLC);
     
     magnetAnalog.broadcast(false);
     magnetDigital.broadcast(true);
@@ -126,7 +126,7 @@ void setup()
     btn3.broadcast(true);
     btn4.broadcast(true);
     distance.broadcast(true);
-    nineDof.broadcast(false);
+    dof.broadcast(true);
     
     wifiShield.setup(SSID, PASS);
     
@@ -145,7 +145,7 @@ void loop() {
     btn3.loop();
     btn4.loop();
     distance.loop();
-    nineDof.loop();
+    dof.loop();
     
     delay(DELAY);
 }

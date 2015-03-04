@@ -78,7 +78,10 @@
 #define SensorBase_CLASS 100
 
 #define OSC_OUT_IP {192, 168, 1, 67}
+//#define OSC_OUT_IP {192, 168, 1, 255}
+//#define OSC_OUT_IP {10, 0, 0, 255} //--255 for all addresses in range
 #define OSC_OUT_PORT 9999
+//#define OSC_OUT_PORT 1234 //--isadora osc port
 
 #include <Arduino.h>
 #include <OSCMessage.h>

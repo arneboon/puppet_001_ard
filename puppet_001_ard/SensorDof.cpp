@@ -23,10 +23,6 @@ SensorDof::SensorDof() {
     this->seaLevelPressure = SENSORS_PRESSURE_SEALEVELHPA;
     this->bConnectedAccel = false;
     this->bConnectedMag = false;
-    
-    this->roll;
-    this->pitch;
-    this->heading;
 }
 
 void SensorDof::setup(String _address, uint8_t _sda, uint8_t _slc) {
@@ -63,6 +59,7 @@ void SensorDof::init() {
 
 void SensorDof::loop() {
     this->read();
+    this->send();
 }
 
 void SensorDof::read() {
@@ -71,8 +68,6 @@ void SensorDof::read() {
     this->accel->getEvent(&this->accel_event);
     if (this->dof->accelGetOrientation(&this->accel_event, &this->orientation))
     {
-        this->roll = this->orientation.roll;
-        this->pitch = this->orientation.pitch;
         /* 'orientation' should have valid .roll and .pitch fields */
 //        Serial.print(F("Roll: "));
 //        Serial.println(this->orientation.roll);
@@ -85,9 +80,35 @@ void SensorDof::read() {
     if (this->dof->magTiltCompensation(SENSOR_AXIS_Z, &this->mag_event, &this->accel_event)) {
         if (this->dof->magGetOrientation(SENSOR_AXIS_Z, &this->mag_event, &this->orientation)) {
             /* 'orientation' should have valid .heading data now */
-            Serial.print(F("Heading: "));
-            Serial.println(orientation.heading);
+//            Serial.print(F("Heading: "));
+//            Serial.println(orientation.heading);
         }
     }
 
 }
+
+void SensorDof::send() {
+    if (this->bBroadcast) {
+        Serial.print("send: ");
+        Serial.print(this->address);
+//        Serial.print(", ");
+//        Serial.print(this->orientation.roll);
+//        Serial.print(", ");
+//        Serial.print(this->orientation.pitch);
+        Serial.print(", ");
+        Serial.print(this->orientation.heading);
+        Serial.println();
+        
+        msg.empty();
+        msg.add((int8_t) this->orientation.roll);
+        msg.add((int8_t) this->orientation.pitch);
+        msg.add((int8_t) this->orientation.heading);
+        
+        Udp.beginPacket(this->outIp, this->outPort);
+        msg.send(Udp);
+        Udp.endPacket();
+        msg.empty();
+    }
+}
+
+

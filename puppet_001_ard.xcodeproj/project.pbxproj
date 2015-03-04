@@ -6374,7 +6374,7 @@
 /* Begin XCBuildConfiguration section */
 		1454A2D41AA38FB400834EB0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1454A2731AA38FB300834EB0 /* Arduino Uno.xcconfig */;
+			baseConfigurationReference = 1454A2691AA38FB300834EB0 /* Arduino Mega 2560.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
