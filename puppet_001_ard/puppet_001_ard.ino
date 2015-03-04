@@ -74,7 +74,7 @@
 #define PIN_BTN_3 5
 #define PIN_BTN_4 6
 #define PIN_DISTANCE_TRIGGER 8
-#define PIN_DISTANCE_ECHO 9
+#define PIN_DISTANCE_ECHO 8
 
 #define SSID "HG655D-A14F3D"
 #define PASS ""
@@ -112,21 +112,21 @@ void setup()
     
     magnetAnalog.setup("/magnet/analog", PIN_MANGNET_ANALOG, INPUT);
     magnetDigital.setup("/magnet/digital", PIN_MAGNET_DIGITAL, INPUT_PULLUP);
-    nineDof.setup("/9dof", PIN_NINEDOF_SDA, PIN_NINEDOF_SLC);
     btn1.setup("/button/1", PIN_BTN_1, INPUT_PULLUP);
     btn2.setup("/button/2", PIN_BTN_2, INPUT_PULLUP);
     btn3.setup("/button/3", PIN_BTN_3, INPUT_PULLUP);
     btn4.setup("/button/4", PIN_BTN_4, INPUT_PULLUP);
     distance.setup("/distance/", PIN_DISTANCE_TRIGGER, PIN_DISTANCE_ECHO, DISTANCE_MAX_CM);
+    nineDof.setup("/9dof", PIN_NINEDOF_SDA, PIN_NINEDOF_SLC);
     
     magnetAnalog.broadcast(false);
     magnetDigital.broadcast(true);
-    nineDof.broadcast(false);
     btn1.broadcast(true);
     btn2.broadcast(true);
     btn3.broadcast(true);
     btn4.broadcast(true);
     distance.broadcast(true);
+    nineDof.broadcast(false);
     
     wifiShield.setup(SSID, PASS);
     
@@ -140,12 +140,12 @@ void setup()
 void loop() {
     magnetAnalog.loop();
     magnetDigital.loop();
-    nineDof.loop();
     btn1.loop();
     btn2.loop();
     btn3.loop();
     btn4.loop();
-//    distance.loop();
+    distance.loop();
+    nineDof.loop();
     
     delay(DELAY);
 }

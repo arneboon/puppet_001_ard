@@ -40,13 +40,12 @@ void SensorDistance::setup(String _address, uint8_t _pinTrigger, uint8_t _pinEch
 
 void SensorDistance::loop() {
     this->read();
-    this->print();
     
-//    if (this->bOnChange) {
-//        this->onChange();
-//    } else {
-//        this->send();
-//    }
+    if (this->bOnChange) {
+        this->onChange();
+    } else {
+        this->send();
+    }
 }
 
 void SensorDistance::read() {
