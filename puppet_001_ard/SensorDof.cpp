@@ -23,6 +23,14 @@ SensorDof::SensorDof() {
     this->seaLevelPressure = SENSORS_PRESSURE_SEALEVELHPA;
     this->bConnectedAccel = false;
     this->bConnectedMag = false;
+    
+    this->roll;
+    this->pitch;
+    this->heading;
+    
+    this->pRoll;
+    this->pPitch;
+    this->pHeading;
 }
 
 void SensorDof::setup(String _address, uint8_t _sda, uint8_t _slc) {
@@ -63,50 +71,80 @@ void SensorDof::init() {
 
 void SensorDof::loop() {
     this->read();
-    this->send();
+    
+    if (this->bOnChange) {
+        this->onChange();
+    } else {
+        this->send();
+    }
 }
 
 void SensorDof::read() {
-    
-    /* Calculate pitch and roll from the raw accelerometer data */
+    //--accelerometer
     this->accel->getEvent(&this->accel_event);
     if (this->dof->accelGetOrientation(&this->accel_event, &this->orientation))
     {
-        /* 'orientation' should have valid .roll and .pitch fields */
-//        Serial.print(F("Roll: "));
-//        Serial.println(this->orientation.roll);
-//        Serial.print(F("Pitch: "));
-//        Serial.println(this->orientation.pitch);
+        this->roll = this->orientation.roll;
+        this->pitch = this->orientation.pitch;
     }
     
-    /* Calculate the heading using the magnetometer */
+    //--magnetometer
     this->mag->getEvent(&this->mag_event);
     if (this->dof->magTiltCompensation(SENSOR_AXIS_Z, &this->mag_event, &this->accel_event)) {
         if (this->dof->magGetOrientation(SENSOR_AXIS_Z, &this->mag_event, &this->orientation)) {
-            /* 'orientation' should have valid .heading data now */
-//            Serial.print(F("Heading: "));
-//            Serial.println(orientation.heading);
+            this->heading = this->orientation.heading;
         }
     }
+}
 
+void SensorDof::onChange() {
+    //--roll
+    if (this->roll != this->pRoll) {
+        this->send();
+    }
+    this->pRoll = this->roll;
+    
+    //--pitch
+    if (this->pitch != this->pPitch) {
+        this->send();
+    }
+    this->pPitch = this->pitch;
+    
+    //--heading
+    if (this->heading != this->pHeading) {
+        this->send();
+    }
+    this->pHeading = this->heading;
+}
+
+void SensorDof::print() {
+    Serial.print("print: ");
+    Serial.print(this->address);
+    Serial.print(", ");
+    Serial.print(this->roll);
+    Serial.print(", ");
+    Serial.print(this->pitch);
+    Serial.print(", ");
+    Serial.print(this->heading);
+    Serial.println();
 }
 
 void SensorDof::send() {
     if (this->bBroadcast) {
         Serial.print("send: ");
         Serial.print(this->address);
-//        Serial.print(", ");
-//        Serial.print(this->orientation.roll);
-//        Serial.print(", ");
-//        Serial.print(this->orientation.pitch);
         Serial.print(", ");
-        Serial.print(this->orientation.heading);
+        Serial.print(this->roll);
+        Serial.print(", ");
+        Serial.print(this->pitch);
+        Serial.print(", ");
+        Serial.print(this->heading);
         Serial.println();
         
         msg.empty();
-        msg.add((int8_t) this->orientation.roll);
-        msg.add((int8_t) this->orientation.pitch);
-        msg.add((int8_t) this->orientation.heading);
+        msg.add((int8_t) this->roll);
+        msg.add((int8_t) this->pitch);
+        msg.add((int8_t) this->heading);
         
         Udp.beginPacket(this->outIp, this->outPort);
         msg.send(Udp);

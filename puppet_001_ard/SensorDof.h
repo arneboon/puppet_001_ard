@@ -74,6 +74,7 @@ public:
     void loop();
     void read();
     void send();
+    void print();
     
 private:
     
@@ -87,6 +88,7 @@ private:
     float seaLevelPressure;
     
     void init();
+    void onChange();
     
     bool bConnectedAccel;
     bool bConnectedMag;
@@ -95,6 +97,14 @@ private:
     sensors_event_t mag_event;
     sensors_event_t mag_event_compensated;
     sensors_vec_t   orientation; //x.roll, x.pitch, x.heading
+    
+    uint8_t roll;
+    uint8_t pitch;
+    uint8_t heading;
+    
+    uint8_t pRoll;
+    uint8_t pPitch;
+    uint8_t pHeading;
 };
 
 
