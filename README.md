@@ -31,8 +31,8 @@ see setup() function in .ino file in root folder for current address listing
 * /distance
  * range 0-400 (centimeters)
 * /dof/rph
- * roll: 
- * pitch:
- * heading: range 0-360
+ * roll: range -180 - 180
+ * pitch: range -180 - 180
+ * heading: range -180 - 180
 * /flex
  * range 0-1024
