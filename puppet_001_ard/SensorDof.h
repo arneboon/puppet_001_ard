@@ -101,10 +101,12 @@ private:
     int16_t roll;
     int16_t pitch;
     int16_t heading;
+    int16_t accelleration;
     
     int16_t pRoll;
     int16_t pPitch;
     int16_t pHeading;
+    int16_t pAccelleration;
 };
 
 

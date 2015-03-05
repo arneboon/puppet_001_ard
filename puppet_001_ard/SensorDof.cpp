@@ -119,13 +119,20 @@ void SensorDof::read() {
     this->accel->getEvent(&this->accel_event);
     this->mag->getEvent(&this->mag_event);
     
-    if (this->dof->magTiltCompensation(SENSOR_AXIS_Z, &this->mag_event, &this->accel_event)) {
-        if (this->dof->fusionGetOrientation(&this->accel_event, &this->mag_event, &this->orientation)) {
-            this->roll = this->orientation.roll;
-            this->pitch = this->orientation.pitch;
+    int16_t value = 0;
+    value = abs(accel_event.acceleration.x);
+    value += abs(accel_event.acceleration.y);
+    value += abs(accel_event.acceleration.z);
+    this->accelleration = value;
+
+    if (this->dof->fusionGetOrientation(&this->accel_event, &this->mag_event, &this->orientation)) {
+        this->roll = this->orientation.roll;
+        this->pitch = this->orientation.pitch;
+        if (this->dof->magTiltCompensation(SENSOR_AXIS_Z, &this->mag_event, &this->accel_event)) {
             this->heading = this->orientation.heading;
         }
     }
+    
     
 }
 
@@ -147,6 +154,12 @@ void SensorDof::onChange() {
         this->send();
     }
     this->pHeading = this->heading;
+    
+    //--accelleration
+    if (this->accelleration != this->pAccelleration) {
+        this->send();
+    }
+    this->pAccelleration = this->accelleration;
 }
 
 void SensorDof::print() {
@@ -158,6 +171,8 @@ void SensorDof::print() {
     Serial.print(this->pitch);
     Serial.print(", ");
     Serial.print(this->heading);
+    Serial.print(", ");
+    Serial.print(this->accelleration);
     Serial.println();
 }
 
@@ -177,6 +192,7 @@ void SensorDof::send() {
         msg.add((int16_t) this->roll);
         msg.add((int16_t) this->pitch);
         msg.add((int16_t) this->heading);
+        msg.add((int16_t) this->accelleration);
         
         Udp.beginPacket(this->outIp, this->outPort);
         msg.send(Udp);

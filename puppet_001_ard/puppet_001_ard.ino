@@ -129,7 +129,7 @@ void setup()
     btn3.setup("/button/3", PIN_BTN_3, INPUT_PULLUP);
     btn4.setup("/button/4", PIN_BTN_4, INPUT_PULLUP);
     distance.setup("/distance", PIN_DISTANCE_TRIGGER, PIN_DISTANCE_ECHO, DISTANCE_MAX_CM, MEDIAN_ITERATIONS);
-    dof.setup("/dof/rph", PIN_NINEDOF_SDA, PIN_NINEDOF_SLC);
+    dof.setup("/dof/rpha", PIN_NINEDOF_SDA, PIN_NINEDOF_SLC);
     flex.setup("/flex", PIN_FLEX, INPUT);
     
     magnetAnalog.setRange(0, 1024, -512, 512);
