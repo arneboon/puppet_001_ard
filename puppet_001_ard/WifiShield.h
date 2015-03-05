@@ -80,12 +80,7 @@ private:
     
     String ssid;
     String pass;
-//    char ssid[];
-//    char pass[];
     int status;
-    
-//    IPAddress outIp;
-//    uint8_t outPort;
     
 };
 
