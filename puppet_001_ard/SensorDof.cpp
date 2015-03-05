@@ -142,9 +142,9 @@ void SensorDof::send() {
         Serial.println();
         
         msg.empty();
-        msg.add((int8_t) this->roll);
-        msg.add((int8_t) this->pitch);
-        msg.add((int8_t) this->heading);
+        msg.add((int16_t) this->roll);
+        msg.add((int16_t) this->pitch);
+        msg.add((int16_t) this->heading);
         
         Udp.beginPacket(this->outIp, this->outPort);
         msg.send(Udp);

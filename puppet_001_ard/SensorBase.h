@@ -77,11 +77,13 @@
 #ifndef SensorBase_CLASS
 #define SensorBase_CLASS 100
 
-//#define OSC_OUT_IP {192, 168, 1, 255}
-//#define OSC_OUT_IP {10, 0, 0, 255} //--255 for all addresses in range
-#define OSC_OUT_IP {255, 255, 255, 255} //-- broadcast https://en.wikipedia.org/wiki/IPv4
-#define OSC_OUT_PORT 9999
-//#define OSC_OUT_PORT 1234 //--isadora osc port
+//#define OSC_OUT_IP {192, 168, 1, 67} //--computer ip
+//#define OSC_OUT_IP {192, 168, 1, 255} //--local range
+//#define OSC_OUT_IP {127, 0, 0, 1} //--local machine
+#define OSC_OUT_IP {255, 255, 255, 255} //-- broadcast https://en.wikipedia.org/wiki/IPv4 & https://tools.ietf.org/html/rfc919
+
+//#define OSC_OUT_PORT 9999
+#define OSC_OUT_PORT 1234 //--isadora osc port
 
 #include <Arduino.h>
 #include <OSCMessage.h>
@@ -118,9 +120,9 @@ protected:
     uint8_t pin;
     uint8_t mode;
     
-    uint8_t raw;
-    uint8_t value;
-    uint8_t pValue;
+    int16_t raw;
+    int16_t value;
+    int16_t pValue;
     
     WiFiUDP Udp;
     IPAddress outIp;

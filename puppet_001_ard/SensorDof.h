@@ -98,13 +98,13 @@ private:
     sensors_event_t mag_event_compensated;
     sensors_vec_t   orientation; //x.roll, x.pitch, x.heading
     
-    uint8_t roll;
-    uint8_t pitch;
-    uint8_t heading;
+    int16_t roll;
+    int16_t pitch;
+    int16_t heading;
     
-    uint8_t pRoll;
-    uint8_t pPitch;
-    uint8_t pHeading;
+    int16_t pRoll;
+    int16_t pPitch;
+    int16_t pHeading;
 };
 
 

@@ -25,7 +25,12 @@ SensorAnalog::SensorAnalog() {
 
 void SensorAnalog::loop() {
     this->read();
-    this->send();
+    
+    if (this->bOnChange) {
+        this->onChange();
+    } else {
+        this->send();
+    }
 }
 
 void SensorAnalog::read() {

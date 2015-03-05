@@ -78,7 +78,7 @@ void SensorBase::send() {
         Serial.println(this->value);
         
         msg.empty();
-        msg.add((int8_t) this->value);
+        msg.add((int16_t) this->value);
         
         Udp.beginPacket(this->outIp, this->outPort);
         msg.send(Udp);

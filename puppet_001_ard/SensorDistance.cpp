@@ -22,13 +22,19 @@ SensorDistance::SensorDistance() {
     this->pinTrigger = 0;
     this->pinEcho = 0;
     this->maxDistance = 0;
+    this->medianIterations = 0;
+    
+    this->pingRaw = 0;
+    this->pingMedian = 0;
+    this->pingCm = 0;
 }
 
-void SensorDistance::setup(String _address, uint8_t _pinTrigger, uint8_t _pinEcho, unsigned int _maxDistance) {
+void SensorDistance::setup(String _address, uint8_t _pinTrigger, uint8_t _pinEcho, unsigned int _maxDistance, uint8_t _medianIterations) {
     this->address = _address;
     this->pinTrigger = _pinTrigger;
     this->pinEcho = _pinEcho;
     this->maxDistance = _maxDistance;
+    this->medianIterations = _medianIterations;
     
     Serial.print("add sensor: ");
     Serial.println(this->address);
@@ -36,13 +42,6 @@ void SensorDistance::setup(String _address, uint8_t _pinTrigger, uint8_t _pinEch
     char address[this->address.length() + 1];
     this->address.toCharArray(address, this->address.length() + 1);
     msg.setAddress(address);
-    
-    /*
-    Serial.print("pin trigger: ");
-    Serial.println(this->pinTrigger);
-    Serial.print("pin echo: ");
-    Serial.println(this->pinEcho);
-    */
     
     this->sonar = new NewPing(this->pinTrigger, this->pinEcho, this->maxDistance);
 }
@@ -58,5 +57,16 @@ void SensorDistance::loop() {
 }
 
 void SensorDistance::read() {
-    this->value = (uint8_t) sonar->ping_cm();
+
+    if (this->medianIterations >= 1) {
+        this->pingMedian = sonar->ping_median(this->medianIterations);
+        this->pingCm = sonar->convert_cm(this->pingMedian);
+    } else {
+        this->pingCm = sonar->ping_cm();
+    }
+    
+    this->value = this->pingCm;
+    if (this->value == 0) {
+        this->value = this->maxDistance;
+    }
 }

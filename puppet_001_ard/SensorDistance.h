@@ -64,7 +64,7 @@ public:
     
     SensorDistance();
     
-    void setup(String _address, uint8_t _pinTrigger, uint8_t _pinEcho, unsigned int _maxDistance);
+    void setup(String _address, uint8_t _pinTrigger, uint8_t _pinEcho, unsigned int _maxDistance, uint8_t _medianIterations);
     void loop();
     void read();
     
@@ -77,6 +77,11 @@ protected:
     uint8_t pinTrigger;
     uint8_t pinEcho;
     unsigned int maxDistance;
+    uint8_t medianIterations;
+    
+    int16_t pingRaw;
+    int16_t pingMedian;
+    int16_t pingCm;
     
 };
 

@@ -75,17 +75,28 @@
 #define PIN_BTN_4 6
 #define PIN_DISTANCE_TRIGGER 8
 #define PIN_DISTANCE_ECHO 8
+#define PIN_FLEX A0
 
-#define SSID "HG655D-A14F3D"
-#define PASS ""
+//#define SSID "HG655D-A14F3D"
+//#define PASS "PU7LAKLW"
+
+//#define SSID "Vechtclub XL F1.19"
+//#define PASS "groentegorilla"
+
+//#define SSID "FRITZ!Box Fon WLAN 7360"
+//#define PASS "48075078634276363403"
+
+#define SSID "HKU_WPA"
+#define PASS "cex8zu86StAstEn"
 
 #define DISTANCE_MAX_CM 400
+#define MEDIAN_ITERATIONS 0
 
 /* NOTE
  * SensorDistance: Wait 50ms between pings (about 20 pings/sec). 
  *  29ms should be the shortest delay between pings.
  */
-#define DELAY 50
+#define DELAY 30
 
 //-------------------------------------------------
 WifiShield wifiShield;
@@ -98,6 +109,7 @@ SensorButton btn3;
 SensorButton btn4;
 SensorDistance distance;
 SensorDof dof;
+SensorAnalog flex;
 
 WiFiUDP Udp;
 
@@ -116,10 +128,11 @@ void setup()
     btn2.setup("/button/2", PIN_BTN_2, INPUT_PULLUP);
     btn3.setup("/button/3", PIN_BTN_3, INPUT_PULLUP);
     btn4.setup("/button/4", PIN_BTN_4, INPUT_PULLUP);
-    distance.setup("/distance", PIN_DISTANCE_TRIGGER, PIN_DISTANCE_ECHO, DISTANCE_MAX_CM);
+    distance.setup("/distance", PIN_DISTANCE_TRIGGER, PIN_DISTANCE_ECHO, DISTANCE_MAX_CM, MEDIAN_ITERATIONS);
     dof.setup("/dof/rph", PIN_NINEDOF_SDA, PIN_NINEDOF_SLC);
+    flex.setup("/flex", PIN_FLEX, INPUT);
     
-    magnetAnalog.broadcast(false);
+    magnetAnalog.broadcast(true);
     magnetDigital.broadcast(true);
     btn1.broadcast(true);
     btn2.broadcast(true);
@@ -127,6 +140,7 @@ void setup()
     btn4.broadcast(true);
     distance.broadcast(true);
     dof.broadcast(true);
+    flex.broadcast(true);
     
     wifiShield.setup(SSID, PASS);
     
@@ -146,6 +160,7 @@ void loop() {
     btn4.loop();
     distance.loop();
     dof.loop();
+    flex.loop();
     
     delay(DELAY);
 }
