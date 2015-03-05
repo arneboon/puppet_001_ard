@@ -33,6 +33,10 @@ void SensorDof::setup(String _address, uint8_t _sda, uint8_t _slc) {
     Serial.print("add sensor: ");
     Serial.println(this->address);
     
+    char address[this->address.length() + 1];
+    this->address.toCharArray(address, this->address.length() + 1);
+    msg.setAddress(address);
+    
     this->dof = new Adafruit_9DOF();
     this->accel = new Adafruit_LSM303_Accel_Unified(30301);
     this->mag = new Adafruit_LSM303_Mag_Unified(30302);
