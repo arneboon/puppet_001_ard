@@ -33,6 +33,10 @@ void SensorDistance::setup(String _address, uint8_t _pinTrigger, uint8_t _pinEch
     Serial.print("add sensor: ");
     Serial.println(this->address);
     
+    char address[this->address.length() + 1];
+    this->address.toCharArray(address, this->address.length() + 1);
+    msg.setAddress(address);
+    
     /*
     Serial.print("pin trigger: ");
     Serial.println(this->pinTrigger);
@@ -56,4 +60,3 @@ void SensorDistance::loop() {
 void SensorDistance::read() {
     this->value = (uint8_t) sonar->ping_cm();
 }
-
