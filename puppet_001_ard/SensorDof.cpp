@@ -80,21 +80,53 @@ void SensorDof::loop() {
 }
 
 void SensorDof::read() {
-    //--accelerometer
-    this->accel->getEvent(&this->accel_event);
-    if (this->dof->accelGetOrientation(&this->accel_event, &this->orientation))
-    {
-        this->roll = this->orientation.roll;
-        this->pitch = this->orientation.pitch;
-    }
     
-    //--magnetometer
+    /*** heading tilt compensated ***/
+//    //--accelerometer
+//    this->accel->getEvent(&this->accel_event);
+//    if (this->dof->accelGetOrientation(&this->accel_event, &this->orientation))
+//    {
+//        this->roll = this->orientation.roll;
+//        this->pitch = this->orientation.pitch;
+//    }
+//    
+//    //--magnetometer
+//    this->mag->getEvent(&this->mag_event);
+//    if (this->dof->magTiltCompensation(SENSOR_AXIS_Z, &this->mag_event, &this->accel_event)) {
+//        if (this->dof->magGetOrientation(SENSOR_AXIS_Z, &this->mag_event, &this->orientation)) {
+//            this->heading = this->orientation.heading;
+//        }
+//    }
+    
+//    /*** fusion heading compensated ***/
+//    this->accel->getEvent(&this->accel_event);
+//    this->mag->getEvent(&this->mag_event);
+//    
+//    //--fusion roll/pitch
+//    if (this->dof->fusionGetOrientation(&this->accel_event, &this->mag_event, &this->orientation)) {
+//        this->roll = this->orientation.roll;
+//        this->pitch = this->orientation.pitch;
+//    }
+//    
+//    //--fusion compensated heading
+//    if (this->dof->magTiltCompensation(SENSOR_AXIS_Z, &this->mag_event, &this->accel_event)) {
+//        if (this->dof->fusionGetOrientation(&this->accel_event, &this->mag_event, &this->orientation)) {
+//            this->heading = this->orientation.heading;
+//        }
+//    }
+//
+    /*** tilt compensated fusion***/
+    this->accel->getEvent(&this->accel_event);
     this->mag->getEvent(&this->mag_event);
+    
     if (this->dof->magTiltCompensation(SENSOR_AXIS_Z, &this->mag_event, &this->accel_event)) {
-        if (this->dof->magGetOrientation(SENSOR_AXIS_Z, &this->mag_event, &this->orientation)) {
+        if (this->dof->fusionGetOrientation(&this->accel_event, &this->mag_event, &this->orientation)) {
+            this->roll = this->orientation.roll;
+            this->pitch = this->orientation.pitch;
             this->heading = this->orientation.heading;
         }
     }
+    
 }
 
 void SensorDof::onChange() {
