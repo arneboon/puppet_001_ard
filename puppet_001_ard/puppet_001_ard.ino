@@ -132,6 +132,9 @@ void setup()
     dof.setup("/dof/rph", PIN_NINEDOF_SDA, PIN_NINEDOF_SLC);
     flex.setup("/flex", PIN_FLEX, INPUT);
     
+    magnetAnalog.setRange(0, 1024, -512, 512);
+    flex.setRange(0, 1024, -512, 512);
+    
     magnetAnalog.broadcast(true);
     magnetDigital.broadcast(true);
     btn1.broadcast(true);

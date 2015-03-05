@@ -20,7 +20,10 @@
 #include "SensorAnalog.h"
 
 SensorAnalog::SensorAnalog() {
-    this->raw = 0;
+    this->fromLow = 0;
+    this->fromHigh = 1024;
+    this->toLow = 0;
+    this->toHigh = 1024;
 }
 
 void SensorAnalog::loop() {
@@ -35,5 +38,13 @@ void SensorAnalog::loop() {
 
 void SensorAnalog::read() {
     this->raw = analogRead(this->pin);
-    this->value = this->raw;
+//    this->value = this->raw;
+    this->value = map(this->raw, this->fromLow, this->fromHigh, this->toLow, this->toHigh);
+}
+
+void SensorAnalog::setRange(int16_t _fromLow, int16_t _fromHigh, int16_t _toLow, int16_t _toHigh) {
+    this->fromLow = _fromLow;
+    this->fromHigh = _fromHigh;
+    this->toLow = _toLow;
+    this->toHigh = _toHigh;
 }
