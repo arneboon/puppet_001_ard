@@ -89,6 +89,7 @@
 #include <OSCMessage.h>
 #include <WiFiUdp.h>
 #include <OSCMessage.h>
+#include <OSCBundle.h>
 
 class SensorBase {
     
@@ -130,6 +131,7 @@ protected:
     
     String address;
     OSCMessage msg;
+    OSCBundle bndl;
     
     void onChange();
     bool bOnChange;
