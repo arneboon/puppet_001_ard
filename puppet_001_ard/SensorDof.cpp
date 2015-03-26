@@ -228,7 +228,7 @@ void SensorDof::send() {
         Serial.print(this->accellerationZ);
         Serial.println();
         
-        this->bndl.add("/dof/rph")
+        this->bndl.add("/mc/dof/rph")
             .add((int16_t) this->roll)
             .add((int16_t) this->pitch)
             .add((int16_t) this->heading);
@@ -238,7 +238,7 @@ void SensorDof::send() {
         Udp.endPacket();
         this->bndl.empty();
         
-        this->bndl.add("/dof/accelleration/xyz")
+        this->bndl.add("/mc/dof/accelleration/xyz")
             .add((int16_t) this->accellerationX)
             .add((int16_t) this->accellerationY)
             .add((int16_t) this->accellerationZ);

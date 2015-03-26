@@ -125,15 +125,15 @@ void setup()
     Serial.println("----------------");
     Serial.println("setup");
     
-    magnetAnalog.setup("/magnet/analog", PIN_MANGNET_ANALOG, INPUT);
-    magnetDigital.setup("/magnet/digital", PIN_MAGNET_DIGITAL, INPUT_PULLUP);
-    btn1.setup("/button/1", PIN_BTN_1, INPUT_PULLUP);
-    btn2.setup("/button/2", PIN_BTN_2, INPUT_PULLUP);
-    btn3.setup("/button/3", PIN_BTN_3, INPUT_PULLUP);
-    btn4.setup("/button/4", PIN_BTN_4, INPUT_PULLUP);
-    distance.setup("/distance", PIN_DISTANCE_TRIGGER, PIN_DISTANCE_ECHO, DISTANCE_MAX_CM, MEDIAN_ITERATIONS);
-    dof.setup("/dof", PIN_NINEDOF_SDA, PIN_NINEDOF_SLC);
-    flex.setup("/flex", PIN_FLEX, INPUT);
+    magnetAnalog.setup("/mc/magnet/analog", PIN_MANGNET_ANALOG, INPUT);
+    magnetDigital.setup("/mc/magnet/digital", PIN_MAGNET_DIGITAL, INPUT_PULLUP);
+    btn1.setup("/mc/button/1", PIN_BTN_1, INPUT_PULLUP);
+    btn2.setup("/mc/button/2", PIN_BTN_2, INPUT_PULLUP);
+    btn3.setup("/mc/button/3", PIN_BTN_3, INPUT_PULLUP);
+    btn4.setup("/mc/button/4", PIN_BTN_4, INPUT_PULLUP);
+    distance.setup("/mc/distance", PIN_DISTANCE_TRIGGER, PIN_DISTANCE_ECHO, DISTANCE_MAX_CM, MEDIAN_ITERATIONS);
+    dof.setup("/mc/dof", PIN_NINEDOF_SDA, PIN_NINEDOF_SLC);
+    flex.setup("/mc/flex", PIN_FLEX, INPUT);
     
     magnetAnalog.broadcast(true);
     magnetDigital.broadcast(true);
