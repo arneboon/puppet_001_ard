@@ -19,6 +19,13 @@
 
 #include "SensorDigital.h"
 
+SensorDigital::SensorDigital() {
+    this->fromLow = 0;
+    this->fromHigh = 1;
+    this->toLow = 0;
+    this->toHigh = 1;
+}
+
 void SensorDigital::loop() {
     this->read();
     
@@ -38,5 +45,6 @@ void SensorDigital::read() {
      */
     
     this->raw = digitalRead(this->pin);
-    this->value = this->raw;
+    //    this->value = this->raw;
+    this->value = map(this->raw, this->fromLow, this->fromHigh, this->toLow, this->toHigh);
 }

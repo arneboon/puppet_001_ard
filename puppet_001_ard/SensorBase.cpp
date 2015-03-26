@@ -110,3 +110,10 @@ void SensorBase::toggleBroadcast() {
 void SensorBase::setAddress(String _address) {
     this->address = _address;
 }
+
+void SensorBase::setRange(int16_t _fromLow, int16_t _fromHigh, int16_t _toLow, int16_t _toHigh) {
+    this->fromLow = _fromLow;
+    this->fromHigh = _fromHigh;
+    this->toLow = _toLow;
+    this->toHigh = _toHigh;
+}

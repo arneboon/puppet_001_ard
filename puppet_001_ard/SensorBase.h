@@ -110,6 +110,7 @@ public:
     void toggleBroadcast();
 
     void setAddress(String _address);
+    void setRange(int16_t _fromLow, int16_t _fromHigh, int16_t _toLow, int16_t _toHigh);
     
     void send();
     
@@ -137,20 +138,12 @@ protected:
     bool bOnChange;
     
     bool bBroadcast;
+    
+    int16_t fromLow;
+    int16_t fromHigh;
+    int16_t toLow;
+    int16_t toHigh;
 };
 
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-

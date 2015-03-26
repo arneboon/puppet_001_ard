@@ -61,6 +61,8 @@ class SensorDigital: public SensorBase {
     
 public:
     
+    SensorDigital();
+    
     void loop();
     void read();
     

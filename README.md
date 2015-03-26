@@ -17,7 +17,7 @@ broadcast to local router (routing 255.255.255.255)
 see setup() function in .ino file in root folder for current address listing  
 
 * /magnet/analog
- * range -512 - 0 - 512
+ * range -100 - 0 - 100
 * /magnet/digital
  * range 0, 1
 * /button/1
@@ -33,6 +33,6 @@ see setup() function in .ino file in root folder for current address listing
 * /dof/rph
  * roll: range -180 - 0 - 180
  * pitch: range -180 - 0 - 180
- * heading: range -180 - 0 - 180
+ * heading: range 0 - 360
 * /flex
- * range -512 - 512
+ * range -100 - 100

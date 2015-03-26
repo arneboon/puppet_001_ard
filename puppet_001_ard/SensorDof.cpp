@@ -31,6 +31,11 @@ SensorDof::SensorDof() {
     this->pRoll;
     this->pPitch;
     this->pHeading;
+    
+    this->fromLow = -180;
+    this->fromHigh = 180;
+    this->toLow = -100;
+    this->toHigh = 100;
 }
 
 void SensorDof::setup(String _address, uint8_t _sda, uint8_t _slc) {
@@ -115,20 +120,21 @@ void SensorDof::read() {
 //        }
 //    }
 //
-    /*** tilt compensated fusion***/
+    //--accelleration
     this->accel->getEvent(&this->accel_event);
     
     this->accellerationX = (int16_t) this->accel_event.acceleration.x;
     this->accellerationY = (int16_t) this->accel_event.acceleration.y;
     this->accellerationZ = (int16_t) this->accel_event.acceleration.z;
     
+    //--pitch, roll
     this->mag->getEvent(&this->mag_event);
 
     if (this->dof->fusionGetOrientation(&this->accel_event, &this->mag_event, &this->orientation)) {
-        this->roll = this->orientation.roll;
-        this->pitch = this->orientation.pitch;
+        this->roll = map(this->orientation.roll, this->fromLow, this->fromHigh, this->toLow, this->toHigh);
+        this->pitch = map(this->orientation.pitch, this->fromLow, this->fromHigh, this->toLow, this->toHigh);
         if (this->dof->magTiltCompensation(SENSOR_AXIS_Z, &this->mag_event, &this->accel_event)) {
-            this->heading = this->orientation.heading;
+            this->heading = map(this->orientation.heading, this->fromLow, this->fromHigh, 0, 360);
         }
     }
 }

@@ -89,6 +89,9 @@
 #define SSID "HKU_WPA"
 #define PASS "cex8zu86StAstEn"
 
+//#define SSID "PerformanceEngine"
+//#define PASS "cex8zu86StAstEn"
+
 #define DISTANCE_MAX_CM 400
 #define MEDIAN_ITERATIONS 0
 
@@ -131,9 +134,6 @@ void setup()
     distance.setup("/distance", PIN_DISTANCE_TRIGGER, PIN_DISTANCE_ECHO, DISTANCE_MAX_CM, MEDIAN_ITERATIONS);
     dof.setup("/dof", PIN_NINEDOF_SDA, PIN_NINEDOF_SLC);
     flex.setup("/flex", PIN_FLEX, INPUT);
-    
-    magnetAnalog.setRange(0, 1024, -512, 512);
-    flex.setRange(0, 1024, -512, 512);
     
     magnetAnalog.broadcast(true);
     magnetDigital.broadcast(true);

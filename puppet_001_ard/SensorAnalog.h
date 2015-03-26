@@ -66,14 +66,8 @@ public:
     void loop();
     void read();
     
-    void setRange(int16_t _fromLow, int16_t _fromHigh, int16_t _toLow, int16_t _toHigh);
-    
 protected:
     
-    int16_t fromLow;
-    int16_t fromHigh;
-    int16_t toLow;
-    int16_t toHigh;
 };
 
 
