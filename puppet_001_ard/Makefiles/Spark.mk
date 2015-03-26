@@ -98,7 +98,9 @@ OBJDUMP     = $(APP_TOOLS_PATH)/arm-none-eabi-objdump
 OBJCOPY     = $(APP_TOOLS_PATH)/arm-none-eabi-objcopy
 SIZE        = $(APP_TOOLS_PATH)/arm-none-eabi-size
 NM          = $(APP_TOOLS_PATH)/arm-none-eabi-nm
+# ~
 GDB         = $(APP_TOOLS_PATH)/arm-none-eabi-gdb
+# ~~
 
 
 # Optimisation

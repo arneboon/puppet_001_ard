@@ -8,10 +8,10 @@
 # All rights reserved
 #
 #
-# Last update: Feb 20, 2015 release 262
+# Last update: Mar 02, 2015 release 263
 
 ifneq ($(shell grep 1.5 $(ARDUINO_PATH)/lib/version.txt),)
-    WARNING_MESSAGE = 'ARDUINO 1.5.x IS REPLACED BY ARDHUINO 1.6.x'
+    WARNING_MESSAGE = 'ARDUINO 1.5.x IS REPLACED BY ARDUINO 1.6.x'
 endif
 
 
@@ -20,7 +20,7 @@ endif
 #
 PLATFORM         := Arduino
 BUILD_CORE       := sam
-PLATFORM_TAG      = ARDUINO=$(ARDUINO_RELEASE) ARDUINO_ARCH_SAM EMBEDXCODE=$(RELEASE_NOW)
+PLATFORM_TAG      = ARDUINO=$(ARDUINO_RELEASE) ARDUINO_ARCH_SAM EMBEDXCODE=$(RELEASE_NOW) ARDUINO_$(BOARD_NAME)
 APPLICATION_PATH := $(ARDUINO_PATH)
 
 # New GCC for ARM tool-suite
@@ -34,6 +34,7 @@ endif
 CORE_LIB_PATH    := $(APPLICATION_PATH)/hardware/arduino/sam/cores/arduino
 APP_LIB_PATH     := $(APPLICATION_PATH)/libraries
 BOARDS_TXT       := $(APPLICATION_PATH)/hardware/arduino/sam/boards.txt
+BOARD_NAME       =  $(call PARSE_BOARD,$(BOARD_TAG),build.board)
 
 # 
 # Uploader bossac 

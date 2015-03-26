@@ -11,7 +11,7 @@
 # Last update: Mar 20, 2015 release 269
 
 
-# Galileo x86 specifics
+# Edison x86 specifics
 # ----------------------------------
 #
 PLATFORM         := IntelArduino
@@ -19,10 +19,10 @@ BUILD_CORE       := x86
 PLATFORM_TAG      = ARDUINO=160 __ARDUINO_X86__ EMBEDXCODE=$(RELEASE_NOW)
 APPLICATION_PATH := $(GALILEO_PATH)
 
-APP_TOOLS_PATH   := $(APPLICATION_PATH)/hardware/tools/i586/pokysdk/usr/bin/i586-poky-linux-uclibc
-CORE_LIB_PATH    := $(APPLICATION_PATH)/hardware/intel/i586-uclibc/cores/arduino
-APP_LIB_PATH     := $(APPLICATION_PATH)/hardware/intel/i586-uclibc/libraries
-BOARDS_TXT       := $(APPLICATION_PATH)/hardware/intel/i586-uclibc/boards.txt
+APP_TOOLS_PATH   := $(APPLICATION_PATH)/hardware/tools/i686/pokysdk/usr/bin/i586-poky-linux
+CORE_LIB_PATH    := $(APPLICATION_PATH)/hardware/intel/i686/cores/arduino
+APP_LIB_PATH     := $(APPLICATION_PATH)/hardware/intel/i686/libraries
+BOARDS_TXT       := $(APPLICATION_PATH)/hardware/intel/i686/boards.txt
 
 # Version check
 #
@@ -34,8 +34,14 @@ endif
 
 # Uploader
 #
+#ifneq ($(BOARD_PORT),ssh)
+#    WARNING_MESSAGE = 'NOT RECOMMENDED. USE INTEL EDISON (WIFI) INSTEAD'
+#endif
+
+REMOTE_FOLDER    = /sketch
+
 UPLOADER         = izmirdl
-UPLOADER_PATH    = $(APPLICATION_PATH)/hardware/intel/i586-uclibc/tools/izmir
+UPLOADER_PATH    = $(APPLICATION_PATH)/hardware/intel/i686/tools/izmir
 UPLOADER_EXEC    = $(UTILITIES_PATH)/uploader_izmir.sh
 UPLOADER_OPTS    = $(APPLICATION_PATH)/hardware/tools/x86/bin
 
@@ -59,18 +65,21 @@ USER_LIB_PATH  = $(wildcard $(SKETCHBOOK_DIR)/?ibraries)
 
 # Rules for making a c++ file from the main sketch (.pde)
 #
-PDEHEADER      = \\\#include \"Arduino.h\"  
+PDEHEADER      = \\\#include \"Arduino.h\"
 
 # Tool-chain names
 #
-CC      = $(APP_TOOLS_PATH)/i586-poky-linux-uclibc-gcc
-CXX     = $(APP_TOOLS_PATH)/i586-poky-linux-uclibc-g++
-AR      = $(APP_TOOLS_PATH)/i586-poky-linux-uclibc-ar
-OBJDUMP = $(APP_TOOLS_PATH)/i586-poky-linux-uclibc-objdump
-OBJCOPY = $(APP_TOOLS_PATH)/i586-poky-linux-uclibc-objcopy
-SIZE    = $(APP_TOOLS_PATH)/i586-poky-linux-uclibc-size
-NM      = $(APP_TOOLS_PATH)/i586-poky-linux-uclibc-nm
-STRIP   = $(APP_TOOLS_PATH)/i586-poky-linux-uclibc-strip
+CC      = $(APP_TOOLS_PATH)/i586-poky-linux-gcc
+CXX     = $(APP_TOOLS_PATH)/i586-poky-linux-g++
+AR      = $(APP_TOOLS_PATH)/i586-poky-linux-ar
+OBJDUMP = $(APP_TOOLS_PATH)/i586-poky-linux-objdump
+OBJCOPY = $(APP_TOOLS_PATH)/i586-poky-linux-objcopy
+SIZE    = $(APP_TOOLS_PATH)/i586-poky-linux-size
+NM      = $(APP_TOOLS_PATH)/i586-poky-linux-nm
+STRIP   = $(APP_TOOLS_PATH)/i586-poky-linux-strip
+# ~
+GDB     = $(YOCTO_PATH)/uploader/i586-poky-linux-gdb
+# ~~
 
 # Specific AVRDUDE location and options
 #
@@ -79,7 +88,7 @@ AVRDUDE_COM_OPTS  = -D -p$(MCU) -C$(AVRDUDE_CONF)
 BOARD    = $(call PARSE_BOARD,$(BOARD_TAG),board)
 #LDSCRIPT = $(call PARSE_BOARD,$(BOARD_TAG),build.ldscript)
 VARIANT  = $(call PARSE_BOARD,$(BOARD_TAG),build.variant)
-VARIANT_PATH = $(APPLICATION_PATH)/hardware/intel/i586-uclibc/variants/$(VARIANT)
+VARIANT_PATH = $(APPLICATION_PATH)/hardware/intel/i686/variants/$(VARIANT)
 VARIANT_CPP_SRCS  = $(wildcard $(VARIANT_PATH)/*.cpp) # */  $(VARIANT_PATH)/*/*.cpp #*/
 VARIANT_OBJ_FILES = $(VARIANT_CPP_SRCS:.cpp=.cpp.o)
 VARIANT_OBJS      = $(patsubst $(VARIANT_PATH)/%,$(OBJDIR)/%,$(VARIANT_OBJ_FILES))
@@ -87,7 +96,6 @@ VARIANT_OBJS      = $(patsubst $(VARIANT_PATH)/%,$(OBJDIR)/%,$(VARIANT_OBJ_FILES
 #SYSTEM_LIB  = $(call PARSE_BOARD,$(BOARD_TAG),build.variant_system_lib)
 SYSTEM_PATH = $(VARIANT_PATH)
 SYSTEM_OBJS = $(SYSTEM_PATH)/$(SYSTEM_LIB)
-
 
 # Two locations for Arduino libraries
 #
@@ -128,20 +136,25 @@ ifneq ($(APP_LIBS_LIST),0)
     BUILD_APP_LIB_OBJS   += $(patsubst $(BUILD_APP_LIB_PATH)/%.c,$(OBJDIR)/libs/%.c.o,$(BUILD_APP_LIB_C_SRC))
 endif
 
+OPTIMISATION = -O0 -g # no optimisation, generate debug symbols
+
 MCU_FLAG_NAME   = march
 MCU             = $(call PARSE_BOARD,$(BOARD_TAG),build.mcu)
-
+    
 EXTRA_LDFLAGS   = $(call PARSE_BOARD,$(BOARD_TAG),build.f_cpu) -$(MCU_FLAG_NAME)=$(MCU)
-EXTRA_LDFLAGS  += --sysroot=$(APPLICATION_PATH)/hardware/tools/i586/i586-poky-linux-uclibc
+EXTRA_LDFLAGS  += --sysroot=$(APPLICATION_PATH)/hardware/tools/i686/core2-32-poky-linux
 
 LDFLAGS         = -$(MCU_FLAG_NAME)=$(MCU) -Wl,--gc-sections $(OPTIMISATION) $(EXTRA_LDFLAGS)
 
 EXTRA_CPPFLAGS  = $(addprefix -D, $(PLATFORM_TAG)) $(call PARSE_BOARD,$(BOARD_TAG),build.f_cpu)
-EXTRA_CPPFLAGS += -$(MCU_FLAG_NAME)=$(MCU) -Xassembler -mquark-strip-lock=yes
-EXTRA_CPPFLAGS += --sysroot=$(APPLICATION_PATH)/hardware/tools/i586/i586-poky-linux-uclibc -I$(VARIANT_PATH)
+EXTRA_CPPFLAGS += -$(MCU_FLAG_NAME)=$(MCU)
+EXTRA_CPPFLAGS += --sysroot=$(APPLICATION_PATH)/hardware/tools/i686/core2-32-poky-linux
+EXTRA_CPPFLAGS += -I$(VARIANT_PATH)
 
-CPPFLAGS      = -MMD
-CPPFLAGS     += $(SYS_INCLUDES) -g $(OPTIMISATION) $(WARNING_FLAGS) -ffunction-sections -fdata-sections -fno-exceptions
-CPPFLAGS     += $(EXTRA_CPPFLAGS) -I$(CORE_LIB_PATH)
+CPPFLAGS        = -MMD
+CPPFLAGS       += $(SYS_INCLUDES) $(OPTIMISATION) $(WARNING_FLAGS)
+CPPFLAGS       += -fno-exceptions -ffunction-sections -fdata-sections
+CPPFLAGS       += $(EXTRA_CPPFLAGS) -I$(CORE_LIB_PATH)
 
-TARGET_HEXBIN = $(TARGET_HEX)
+TARGET_HEXBIN = $(TARGET_DOT)
+

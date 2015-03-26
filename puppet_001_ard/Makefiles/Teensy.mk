@@ -8,7 +8,7 @@
 # All rights reserved
 #
 #
-# Last update: Oct 30, 2014 release 225
+# Last update: Mar 20, 2015 release 268
 
 
 
@@ -16,13 +16,18 @@
 # ----------------------------------
 #
 PLATFORM         := Teensy
-PLATFORM_TAG      = ARDUINO=105 TEENSYDUINO=120 TEENSY_CORE EMBEDXCODE=$(RELEASE_NOW)
+PLATFORM_TAG      = ARDUINO=161 TEENSY_CORE EMBEDXCODE=$(RELEASE_NOW)
 APPLICATION_PATH := $(TEENSY_PATH)
 
+t001 = $(APPLICATION_PATH)/lib/teensyduino.txt
+TEENSY_VERSION = $(shell if [ -f $(t001) ] ; then cat $(t001) ; fi)
+ifneq ($(TEENSY_VERSION),1.21)
+    $(error Teensyduino release 1.21 required.)
+endif
 
 # Automatic Teensy2 or Teensy 3 selection based on build.core
 #
-BOARDS_TXT  := $(APPLICATION_PATH)/hardware/teensy/boards.txt
+BOARDS_TXT  := $(APPLICATION_PATH)/hardware/teensy/avr/boards.txt
 BUILD_CORE   = $(call PARSE_BOARD,$(BOARD_TAG),build.core)
 
 ifeq ($(BUILD_CORE),teensy)
@@ -56,7 +61,7 @@ ifeq ($(USB_FLAGS),)
     USB_FLAGS = -DUSB_VID=null -DUSB_PID=null
 endif
 
-USB_FLAGS += $(addprefix -D,$(TEENSY_USB) $(TEENSY_LAYOUT)) -DTIME_T=$(shell date +%s)
+USB_FLAGS += $(addprefix -D,$(TEENSY_USB) $(TEENSY_LAYOUT))
 
 MAX_RAM_SIZE = $(call PARSE_BOARD,$(BOARD_TAG),upload.maximum_ram_size)
 

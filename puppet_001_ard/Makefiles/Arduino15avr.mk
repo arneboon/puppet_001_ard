@@ -8,10 +8,10 @@
 # All rights reserved
 #
 #
-# Last update: Feb 20, 2015 release 262
+# Last update: Mar 02, 2015 release 263
 
 ifneq ($(shell grep 1.5 $(ARDUINO_PATH)/lib/version.txt),)
-    WARNING_MESSAGE = 'ARDUINO 1.5.x IS REPLACED BY ARDHUINO 1.6.x'
+    WARNING_MESSAGE = 'ARDUINO 1.5.x IS REPLACED BY ARDUINO 1.6.x'
 endif
 
 
@@ -20,13 +20,14 @@ endif
 #
 PLATFORM         := Arduino
 BUILD_CORE       := avr
-PLATFORM_TAG      = ARDUINO=$(ARDUINO_RELEASE) ARDUINO_ARCH_AVR EMBEDXCODE=$(RELEASE_NOW)
+PLATFORM_TAG      = ARDUINO=$(ARDUINO_RELEASE) ARDUINO_ARCH_AVR EMBEDXCODE=$(RELEASE_NOW) ARDUINO_$(ARDUINO_NAME)
 APPLICATION_PATH := $(ARDUINO_PATH)
 
 APP_TOOLS_PATH   := $(APPLICATION_PATH)/hardware/tools/avr/bin
 CORE_LIB_PATH    := $(APPLICATION_PATH)/hardware/arduino/avr/cores/arduino
 APP_LIB_PATH     := $(APPLICATION_PATH)/libraries
 BOARDS_TXT       := $(APPLICATION_PATH)/hardware/arduino/avr/boards.txt
+ARDUINO_NAME      =  $(call PARSE_BOARD,$(BOARD_TAG),build.board)
 
 ifneq ($(findstring LITTLEROBOTFRIENDS,$(GCC_PREPROCESSOR_DEFINITIONS)),)
     BOARDS_TXT   := $(LITTLEROBOTFRIENDS_PATH)/boards.txt
@@ -192,7 +193,7 @@ endif
 
 MCU_FLAG_NAME  = mmcu
 EXTRA_LDFLAGS  = 
-EXTRA_CPPFLAGS = -I$(VARIANT_PATH) $(addprefix -D, $(PLATFORM_TAG))
+EXTRA_CPPFLAGS = -I$(VARIANT_PATH) $(addprefix -D, $(PLATFORM_TAG)) -fno-threadsafe-statics -MMD
 
 
 # Arduino Leonardo USB PID VID

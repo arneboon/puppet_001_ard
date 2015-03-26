@@ -1,5 +1,5 @@
 //
-//  Intel Galileo Gen2.xcconfig
+//  Intel Edison.xcconfig
 //  Board config file
 //  ----------------------------------
 //  Developed with embedXcode
@@ -9,14 +9,14 @@
 //
 //  Created by 	Rei Vilo on Jul 01, 2014
 //  Copyright   (c) 2010-2015 http://embedxcode.weebly.com
-//  Licence		All rigths reserved
+//  Licence		All rights reserved
 //
-// Last update: Jul 31, 2014 release 171
+// Last update: Mar 08, 2015 release 265
 
 // Board identifier
 // See Boards.txt for <tag>.name=Arduino Uno (16 MHz)
 //
-BOARD_TAG  = izmir_fg
+BOARD_TAG  = izmir_ec
 
 // Port (optionnal)
 // most common are /dev/tty.usbserial*, /dev/tty.usbmodem* or /dev/tty.uart*
@@ -26,7 +26,7 @@ BOARD_PORT = /dev/cu.usbmodem*
 // References for Xcode code-sense
 // See Boards.txt for <tag>.build.mcu=<GCC_PREPROCESSOR_DEFINITIONS>
 //
-GCC_PREPROCESSOR_DEFINITIONS = i586 ARDUINO GALILEO_IDE
+GCC_PREPROCESSOR_DEFINITIONS = i686 ARDUINO EDISON_IDE
 
 // Specify the full path and name of the application
 // with /Contents/Resources/Java/** after
@@ -37,4 +37,5 @@ HEADER_SEARCH_PATHS = /Applications/IntelArduino.app/Contents/Resources/Java/** 
 // given by <tag>.upload.maximum_ram_size in boards.txt for Maple and Teensy
 // given by <tag>.upload.maximum_data_size in boards.txt for Arduino 1.5.x
 //
-//MAX_RAM_SIZE = 2048
+MAX_FLASH_SIZE = 10000000
+MAX_RAM_SIZE = 10000000

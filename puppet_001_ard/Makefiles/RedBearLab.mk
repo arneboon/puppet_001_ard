@@ -8,7 +8,7 @@
 # All rights reserved
 #
 #
-# Last update: Oct 30, 2014 release 225
+# Last update: Mar 20, 2015 release 270
 
 # ARDUINO 1.5.X IS STILL IN BETA, UNSTABLE AND PRONE TO BUGS
 WARNING_MESSAGE = 'ARDUINO 1.5.X IS STILL IN BETA, UNSTABLE AND PRONE TO BUGS'
@@ -134,32 +134,39 @@ endif
 
 # RedBearLab long list of paths to be included
 #
-SYSTEM_FLAGS    = -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/cores/arduino
-SYSTEM_FLAGS   += -I$(VARIANT_PATH)
-SYSTEM_FLAGS   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/system/CMSIS/CMSIS/Include
-SYSTEM_FLAGS   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include
-SYSTEM_FLAGS   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include/app_common
-SYSTEM_FLAGS   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include/ble
-SYSTEM_FLAGS   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include/ble/ble_services
-SYSTEM_FLAGS   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include/ble/rpc
-SYSTEM_FLAGS   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include/gcc
-SYSTEM_FLAGS   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include/s110
-SYSTEM_FLAGS   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include/sd_common
-SYSTEM_FLAGS   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include/sdk
+INCLUDE_PATH    = -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/cores/arduino
+INCLUDE_PATH   += -I$(VARIANT_PATH)
+#INCLUDE_PATH   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/system/CMSIS/CMSIS/Include
+
+r05             = $(call PARSE_BOARD,$(BOARD_TAG),build.variant_system_include)
+r06             = $(subst {build.system.path},$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/system,$(r05))
+INCLUDE_PATH   += $(subst {runtime.ide.path},$(APPLICATION_PATH),$(r06))
+
+#INCLUDE_PATH   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include
+#INCLUDE_PATH   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include/app_common
+#INCLUDE_PATH   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include/ble
+#INCLUDE_PATH   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include/ble/ble_services
+#INCLUDE_PATH   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include/ble/rpc
+#INCLUDE_PATH   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include/gcc
+#INCLUDE_PATH   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include/s110
+#INCLUDE_PATH   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include/sd_common
+#INCLUDE_PATH   += -I$(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/Include/sdk
+
 
 MCU_FLAG_NAME   = mcpu
 EXTRA_LDFLAGS   = -T$(VARIANT_PATH)/$(LDSCRIPT) -Wl,-Map,Builds/embeddedcomputing.map $(VARIANT_OBJS)
 EXTRA_LDFLAGS  += -lgcc -mthumb -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--entry=Reset_Handler 
 EXTRA_LDFLAGS  += -Wl,--unresolved-symbols=report-all -Wl,--warn-common -Wl,--warn-section-align 
-EXTRA_LDFLAGS  += -Wl,--warn-unresolved-symbols
+EXTRA_LDFLAGS  += -Wl,--warn-unresolved-symbols --specs=nano.specs
 
 LDFLAGS         = -$(MCU_FLAG_NAME)=$(MCU) -lm -Wl,--gc-sections $(OPTIMISATION) $(EXTRA_LDFLAGS)
 
 EXTRA_CPPFLAGS  = $(addprefix -D, $(PLATFORM_TAG))
 EXTRA_CPPFLAGS += -DBLE_STACK_SUPPORT_REQD -DDEBUG_NRF_USER -DBOARD_PCA10001
-EXTRA_CPPFLAGS +=  -fno-rtti -mthumb -nostdlib --param max-inline-insns-single=500 -Dprintf=iprintf $(SYSTEM_FLAGS)
+EXTRA_CPPFLAGS +=  -fno-rtti -mthumb -nostdlib --param max-inline-insns-single=500 -Dprintf=iprintf $(INCLUDE_PATH)
 
-LIBARY_A        = $(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/nrf_sdk.a
+#LIBRARY_A        = $(APPLICATION_PATH)/hardware/arduino/RBL_nRF51822/nrf51822_SDK/nrf_sdk.a
+FIRST_O_IN_A    = $(OBJDIR)/startup_nrf51822.c.o
 
 #OBJCOPYFLAGS  = -v -Obinary
 OBJCOPYFLAGS  = -v -Obinary

@@ -8,7 +8,7 @@
 # All rights reserved
 #
 #
-# Last update: Feb 20, 2015 release 262
+# Last update: Mar 23, 2015 release 271
 
 
 
@@ -99,9 +99,19 @@ ADAFRUIT_APP  = $(APPLICATIONS_PATH)/Adafruit.app
 SPARK_APP     = $(EMBEDXCODE_APP)/Spark
 MBED_APP      = $(EMBEDXCODE_APP)/mbed
 # ~
+YOCTO_APP     = $(EMBEDXCODE_APP)/Yocto
 ROBOTIS_APP   = $(APPLICATIONS_PATH)/ROBOTIS_OpenCM.app
 RFDUINO_APP   = $(APPLICATIONS_PATH)/RFduino.app
 # ~~
+
+# panStamp.app path
+#
+PANSTAMP_0    = $(APPLICATIONS_PATH)/panStamp.app
+ifneq ($(wildcard $(PANSTAMP_0)),)
+    PANSTAMP_APP    = $(PANSTAMP_0)
+else
+    PANSTAMP_APP    = $(APPLICATIONS_PATH)/Arduino.app
+endif
 
 # Teensyduino.app path
 #
@@ -141,9 +151,9 @@ else
 endif
 # ~~
 
-# GalileoIDE.app path
+# IntelArduino.app path
 #
-GALILEO_0    = $(APPLICATIONS_PATH)/GalileoIDE.app
+GALILEO_0    = $(APPLICATIONS_PATH)/IntelArduino.app
 ifneq ($(wildcard $(GALILEO_0)),)
     GALILEO_APP    = $(GALILEO_0)
 else
@@ -182,13 +192,17 @@ ifeq ($(wildcard $(ARDUINO_APP)),)
                                             ifeq ($(wildcard $(RFDUINO_APP)),)
                                                 ifeq ($(wildcard $(REDBEARLAB_APP)),)
                                                     ifeq ($(wildcard $(LITTLEROBOTFRIENDS_APP)),)
+                                                    ifeq ($(wildcard $(PANSTAMP_APP)),)
                                                         ifeq ($(wildcard $(MBED_APP)/*),) # */
+                                                        ifeq ($(wildcard $(YOCTO_APP)/*),) # */
                                                         ifeq ($(wildcard $(SPARK_APP)/*),) # */
                                                             ifeq ($(wildcard $(ADAFRUIT_APP)),)
                                                                 $(error Error: no application found)
                                                             endif
                                                         endif
                                                         endif
+                                                        endif
+                                                    endif
                                                     endif
                                                 endif
                                             endif
@@ -225,7 +239,7 @@ else
     ARDUINO_MAJOR   := 0
 endif
 
-# But nightmare continues with 2 releases of Arduino 1.6
+# But nightmare continues with 2 releases for Arduino 1.6
 # Different folder locations in Java 6 and Java 7 versions
 # Another example of Arduino's quick and dirty job :(
 #
@@ -264,24 +278,48 @@ ifneq ($(findstring LITTLEROBOTFRIENDS,$(GCC_PREPROCESSOR_DEFINITIONS)),)
     endif
 endif
 
-# Paths list
+# Same for Teensyduino plug-in for Arduino 1.6.x
+#
+ifeq ($(wildcard $(TEENSY_APP)/Contents/Resources/Java),)
+	TEENSY_PATH   := $(TEENSY_APP)/Contents/Java
+else
+	TEENSY_PATH   := $(TEENSY_APP)/Contents/Resources/Java
+endif
+
+# Paths list for other genuine IDEs
 #
 MPIDE_PATH      = $(MPIDE_APP)/Contents/Resources/Java
-WIRING_PATH     = $(WIRING_APP)/Contents/Resources/Java
+WIRING_PATH     = $(WIRING_APP)/Contents/Java
 ENERGIA_PATH    = $(ENERGIA_APP)/Contents/Resources/Java
 MAPLE_PATH      = $(MAPLE_APP)/Contents/Resources/Java
-TEENSY_PATH     = $(TEENSY_APP)/Contents/Resources/Java
+GALILEO_PATH    = $(GALILEO_APP)/Contents/Resources/Java
+
+# Paths list for other plug-ins
+#
 DIGISPARK_PATH  = $(DIGISPARK_APP)/Contents/Resources/Java
 MICRODUINO_PATH = $(MICRODUINO_APP)/Contents/Resources/Java
-GALILEO_PATH    = $(GALILEO_APP)/Contents/Resources/Java
-MBED_PATH       = $(EMBEDXCODE_APP)/mbed
 ADAFRUIT_PATH   = $(ADAFRUIT_APP)/Contents/Resources/Java
+PANSTAMP_PATH   = $(PANSTAMP_APP)/Contents/Resources/Java
 LITTLEROBOTFRIENDS_PATH = $(LITTLEROBOTFRIENDS_APP)/Contents/Resources/Java
+
+# Paths list for IDE-less platforms
+#
 SPARK_PATH      = $(EMBEDXCODE_APP)/Spark
+MBED_PATH       = $(EMBEDXCODE_APP)/mbed
+
 # ~
+# Paths list for other genuine IDEs
+#
+ROBOTIS_PATH    = $(ROBOTIS_APP)/Contents/Resources/Java
+
+# Paths list for other plug-ins
+#
 LIGHTBLUE_PATH  = $(LIGHTBLUE_APP)/Contents/Resources/Java
 RFDUINO_PATH    = $(RFDUINO_APP)/Contents/Java
-ROBOTIS_PATH    = $(ROBOTIS_APP)/Contents/Resources/Java
+
+# Paths list for IDE-less platforms
+#
+YOCTO_PATH      = $(EMBEDXCODE_APP)/Yocto
 # ~~
 
 
@@ -306,6 +344,20 @@ PARSE_BOARD = $(shell if [ -f $(BOARDS_TXT) ]; then grep ^$(1).$(2)= $(BOARDS_TX
 # result = $(call PARSE_FILE 'boardname','parameter','filename')
 #
 PARSE_FILE = $(shell if [ -f $(3) ]; then grep ^$(1).$(2) $(3) | cut -d = -f 2-; fi; )
+
+# ~
+# Warnings flags
+#
+ifeq ($(WARNING_OPTIONS),)
+    WARNING_FLAGS = -Wall
+else
+    ifeq ($(WARNING_OPTIONS),0)
+        WARNING_FLAGS = -w
+    else
+        WARNING_FLAGS = $(addprefix -W, $(WARNING_OPTIONS))
+    endif
+endif
+# ~~
 
 
 # Clean if new BOARD_TAG
@@ -354,6 +406,7 @@ ifneq ($(MAKECMDGOALS),boards)
           include $(MAKEFILE_PATH)/Cosa.mk
       else
 # ~~
+        # Arduino
         ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(ARDUINO_PATH)/hardware/arduino/boards.txt),)
             include $(MAKEFILE_PATH)/Arduino.mk
         else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(ARDUINO_PATH)/hardware/arduino/avr/boards.txt),)
@@ -364,22 +417,26 @@ ifneq ($(MAKECMDGOALS),boards)
             include $(MAKEFILE_PATH)/Arduino15sam.mk
         else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(ARDUINO_PATH)/hardware/arduino/boards.txt),)
             include $(MAKEFILE_PATH)/Arduino.mk
-        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(GALILEO_PATH)/hardware/arduino/x86/boards.txt),)
+
+        # Intel
+        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(GALILEO_PATH)/hardware/intel/i586-uclibc/boards.txt),)
             include $(MAKEFILE_PATH)/Galileo.mk
-        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(ADAFRUIT_PATH)/hardware/arduino/boards.txt),)
-            ARDUINO_PATH := $(ADAFRUIT_PATH)
-            include $(MAKEFILE_PATH)/Arduino1.mk
+        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(GALILEO_PATH)/hardware/intel/i686/boards.txt),)
+            include $(MAKEFILE_PATH)/Edison.mk
 
-        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(LITTLEROBOTFRIENDS_BOARDS)),)
-            include $(MAKEFILE_PATH)/Arduino1.mk
-        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(REDBEARLAB_PATH)/hardware/arduino/RBL_nRF51822/boards.txt),)
-            include $(MAKEFILE_PATH)/RedBearLab.mk
+        # panStamp
+        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(PANSTAMP_PATH)/hardware/panstamp/avr/boards.txt),)
+            include $(MAKEFILE_PATH)/panStampAVR.mk
+        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(PANSTAMP_PATH)/hardware/panstamp/msp430/boards.txt),)
+            include $(MAKEFILE_PATH)/panStampNRG.mk
 
+        # MPIDE
         else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(MPIDE_PATH)/hardware/pic32/boards.txt),)
             include $(MAKEFILE_PATH)/Mpide.mk
-        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(MPIDE_PATH)/hardware/pic32/variants/picadillo_35t/boards.txt),)
+        else ifneq ($(shell grep -rnwl $(MPIDE_PATH)/hardware/pic32/variants -e '$(BOARD_TAG).name'),)
             include $(MAKEFILE_PATH)/Mpide.mk
 
+        # Energia
         else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(ENERGIA_PATH)/hardware/msp430/boards.txt),)
             include $(MAKEFILE_PATH)/EnergiaMSP430.mk
         else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(ENERGIA_PATH)/hardware/c2000/boards.txt),)
@@ -389,15 +446,25 @@ ifneq ($(MAKECMDGOALS),boards)
         else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(ENERGIA_PATH)/hardware/cc3200/boards.txt),)
             include $(MAKEFILE_PATH)/EnergiaCC3200.mk
 
+        # Others
+        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(ADAFRUIT_PATH)/hardware/arduino/boards.txt),)
+            ARDUINO_PATH := $(ADAFRUIT_PATH)
+            include $(MAKEFILE_PATH)/Arduino1.mk
+
+        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(LITTLEROBOTFRIENDS_BOARDS)),)
+            include $(MAKEFILE_PATH)/Arduino1.mk
+        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(REDBEARLAB_PATH)/hardware/arduino/RBL_nRF51822/boards.txt),)
+            include $(MAKEFILE_PATH)/RedBearLab.mk
+
         else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(MAPLE_PATH)/hardware/leaflabs/boards.txt),)
             include $(MAKEFILE_PATH)/MapleIDE.mk
         else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(WIRING_PATH)/hardware/Wiring/boards.txt),)
             include $(MAKEFILE_PATH)/Wiring.mk
-        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(TEENSY_PATH)/hardware/teensy/boards.txt),)
+        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(TEENSY_PATH)/hardware/teensy/avr/boards.txt),)
             include $(MAKEFILE_PATH)/Teensy.mk
         else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(MICRODUINO_PATH)/hardware/Microduino/boards.txt),)
             include $(MAKEFILE_PATH)/Microduino.mk
-        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(DIGISPARK_PATH)/hardware/digispark/boards.txt),)
+        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(DIGISPARK_PATH)/hardware/digistump/boards.txt),)
             include $(MAKEFILE_PATH)/Digispark.mk
 
 #        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(MBED_PATH)/boards.txt),)
@@ -420,6 +487,9 @@ ifneq ($(MAKECMDGOALS),boards)
 
         else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(RFDUINO_PATH)/hardware/arduino/RFduino/boards.txt),)
             include $(MAKEFILE_PATH)/RFduino.mk
+
+        else ifneq ($(call PARSE_FILE,$(BOARD_TAG),name,$(YOCTO_PATH)/boards.txt),)
+            include $(MAKEFILE_PATH)/IntelYocto.mk
 # ~~
 
         else
@@ -442,4 +512,5 @@ EXCLUDE_LIST   = $(addprefix %,$(EXCLUDE_NAMES))
 # Step 2
 #
 include $(MAKEFILE_PATH)/Step2.mk
+
 

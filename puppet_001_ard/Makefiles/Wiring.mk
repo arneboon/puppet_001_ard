@@ -8,7 +8,7 @@
 # All rights reserved
 #
 #
-# Last update: Sep 06, 2014 release 176
+# Last update: Mar 20, 2015 release 269
 
 # WIRING SUPPORT IS PUT ON HOLD
 WARNING_MESSAGE = 'WIRING SUPPORT IS PUT ON HOLD'
@@ -18,13 +18,22 @@ WARNING_MESSAGE = 'WIRING SUPPORT IS PUT ON HOLD'
 # ----------------------------------
 #
 PLATFORM         := Wiring
-PLATFORM_TAG      = WIRING=100 EMBEDXCODE=$(RELEASE_NOW)
+PLATFORM_TAG      = WIRING=101 EMBEDXCODE=$(RELEASE_NOW)
 APPLICATION_PATH := $(WIRING_PATH)
 
 APP_TOOLS_PATH   := $(APPLICATION_PATH)/tools/avr/bin
 CORE_LIB_PATH    := $(APPLICATION_PATH)/cores/Common
 APP_LIB_PATH     := $(APPLICATION_PATH)/libraries
 BOARDS_TXT       := $(APPLICATION_PATH)/hardware/Wiring/boards.txt
+
+# Version check
+#
+w001 = $(APPLICATION_PATH)/lib/version.txt
+VERSION_CHECK = $(shell if [ -f $(w001) ] ; then cat $(w001) ; fi)
+ifneq ($(VERSION_CHECK),v1.0.1-dev)
+    $(error Wiring release 1.0.1 required.)
+endif
+
 
 # Sketchbook/Libraries path
 # wildcard required for ~ management
@@ -89,11 +98,11 @@ VARIANT_OBJS    = $(patsubst $(VARIANT_PATH)/%.cpp,$(OBJDIR)/libs/%.cpp.o,$(VARI
 BUILD_APP_LIB_PATH = $(BUILD_CORE_LIB_PATH)/libraries
 
 ifndef APP_LIBS_LIST
-    w01             = $(realpath $(sort $(dir $(wildcard $(APP_LIB_PATH)/*/*.h $(APP_LIB_PATH)/*/*/*.h)))) # */
-    APP_LIBS_LIST  = $(subst $(APP_LIB_PATH)/,,$(filter-out $(EXCLUDE_LIST),$(w01)))
+    w101             = $(realpath $(sort $(dir $(wildcard $(APP_LIB_PATH)/*/*.h $(APP_LIB_PATH)/*/*/*.h)))) # */
+    APP_LIBS_LIST  = $(subst $(APP_LIB_PATH)/,,$(filter-out $(EXCLUDE_LIST),$(w101)))
 
-    w02             = $(realpath $(sort $(dir $(wildcard $(BUILD_APP_LIB_PATH)/*/*.h $(BUILD_APP_LIB_PATH)/*/*/*.h)))) # */
-    BUILD_APP_LIBS_LIST = $(subst $(BUILD_APP_LIB_PATH)/,,$(filter-out $(EXCLUDE_LIST),$(w02)))
+    w102             = $(realpath $(sort $(dir $(wildcard $(BUILD_APP_LIB_PATH)/*/*.h $(BUILD_APP_LIB_PATH)/*/*/*.h)))) # */
+    BUILD_APP_LIBS_LIST = $(subst $(BUILD_APP_LIB_PATH)/,,$(filter-out $(EXCLUDE_LIST),$(w102)))
 else
     BUILD_APP_LIBS_LIST = $(APP_LIBS_LIST)
 endif

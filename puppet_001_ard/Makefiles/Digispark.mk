@@ -8,7 +8,7 @@
 # All rights reserved
 #
 #
-# Last update: Nov 18, 2014 release 234
+# Last update: Mar 23, 2015 release 271
 
 
 
@@ -21,9 +21,9 @@ PLATFORM_TAG      = ARDUINO=105 DIGISPARK EMBEDXCODE=$(RELEASE_NOW)
 APPLICATION_PATH := $(DIGISPARK_PATH)
 
 APP_TOOLS_PATH   := $(APPLICATION_PATH)/hardware/tools/avr/bin
-CORE_LIB_PATH    := $(APPLICATION_PATH)/hardware/digispark/cores/tiny
+CORE_LIB_PATH    := $(APPLICATION_PATH)/hardware/digistump/cores/tiny
 APP_LIB_PATH     := $(APPLICATION_PATH)/libraries
-BOARDS_TXT       := $(APPLICATION_PATH)/hardware/digispark/boards.txt
+BOARDS_TXT       := $(APPLICATION_PATH)/hardware/digistump/boards.txt
 
 #
 # Uploader bossac 

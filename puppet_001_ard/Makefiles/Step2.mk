@@ -8,7 +8,7 @@
 # All rights reserved
 #
 #
-# Last update: Feb 20, 2015 release 262
+# Last update: Mar 23, 2015 release 271
 
 
 
@@ -114,6 +114,10 @@ ifneq ($(MAKECMDGOALS),clean)
         PLATFORM_VERSION := $(shell cat $(APPLICATION_PATH)/lib/build-version.txt)
     else ifeq ($(PLATFORM),mbed)
         PLATFORM_VERSION := $(shell cat $(APPLICATION_PATH)/version.txt)
+# ~
+    else ifeq ($(PLATFORM),IntelYocto)
+        PLATFORM_VERSION := $(shell cat $(APPLICATION_PATH)/version.txt)
+# ~~
     else ifeq ($(PLATFORM),Spark)
         PLATFORM_VERSION := $(shell cat $(APPLICATION_PATH)/version.txt)
     else
@@ -147,7 +151,6 @@ ifdef CORE_LIB_PATH
     
     s210              = $(filter-out %main.cpp, $(wildcard $(CORE_LIB_PATH)/*.cpp $(CORE_LIB_PATH)/*/*.cpp $(CORE_LIB_PATH)/*/*/*.cpp $(CORE_LIB_PATH)/*/*/*/*.cpp)) # */
     CORE_CPP_SRCS     = $(filter-out %/$(EXCLUDE_LIST),$(s210))
-
     CORE_AS1_SRCS_OBJ = $(patsubst %.S,%.S.o,$(filter %S, $(CORE_AS_SRCS)))
     CORE_AS2_SRCS_OBJ = $(patsubst %.s,%.s.o,$(filter %s, $(CORE_AS_SRCS)))
 
@@ -166,11 +169,13 @@ ifeq ($(APP_LIBS_LIST),)
     APP_LIBS_LIST = $(subst $(APP_LIB_PATH)/,,$(filter-out $(EXCLUDE_LIST),$(s201)))
 endif
 
-ifndef APP_LIBS
-ifneq ($(APP_LIBS_LIST),0)
-	s204         = $(patsubst %,$(APP_LIB_PATH)/%,$(APP_LIBS_LIST))
-	APP_LIBS   = $(realpath $(sort $(dir $(foreach dir,$(s204),$(wildcard $(dir)/*.h $(dir)/*/*.h $(dir)/*/*/*.h)))))
-endif
+ifeq ($(APP_LIBS_LOCK),)
+    ifndef APP_LIBS
+    ifneq ($(APP_LIBS_LIST),0)
+        s204       = $(patsubst %,$(APP_LIB_PATH)/%,$(APP_LIBS_LIST))
+        APP_LIBS   = $(realpath $(sort $(dir $(foreach dir,$(s204),$(wildcard $(dir)/*.h $(dir)/*/*.h $(dir)/*/*/*.h)))))
+    endif
+    endif
 endif
 
 ifndef APP_LIB_OBJS
@@ -280,6 +285,7 @@ TARGET_HEX = $(OBJDIR)/$(TARGET).hex
 TARGET_ELF = $(OBJDIR)/$(TARGET).elf
 TARGET_BIN = $(OBJDIR)/$(TARGET).bin
 TARGET_OUT = $(OBJDIR)/$(TARGET).out
+TARGET_DOT = $(OBJDIR)/$(TARGET)
 TARGET_TXT = $(OBJDIR)/$(TARGET).txt
 TARGETS    = $(OBJDIR)/$(TARGET).*
 
@@ -304,10 +310,12 @@ ECHO    = echo
 
 # General arguments
 #
+#ifeq ($(APP_LIBS_LOCK),)
 SYS_INCLUDES  = $(patsubst %,-I%,$(APP_LIBS))
 SYS_INCLUDES += $(patsubst %,-I%,$(BUILD_APP_LIBS))
 SYS_INCLUDES += $(patsubst %,-I%,$(USER_LIBS))
 SYS_INCLUDES += $(patsubst %,-I%,$(LOCAL_LIBS))
+#endif
 
 SYS_OBJS      = $(wildcard $(patsubst %,%/*.o,$(APP_LIBS))) # */
 SYS_OBJS     += $(wildcard $(patsubst %,%/*.o,$(BUILD_APP_LIBS))) # */
@@ -406,7 +414,7 @@ $(OBJDIR)/libs/%.s.o: $(APP_LIB_PATH)/%.s
 	@mkdir -p $(dir $@)
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) $< $(OUT_PREPOSITION)$@
 
-$(OBJDIR)/libs/%.S.o: $(APP_LIB_PATH)/%.s
+$(OBJDIR)/libs/%.S.o: $(APP_LIB_PATH)/%.S
 	$(call SHOW,"2.3-APP",$@,$<)
 	$(call TRACE,"2-APP",$@,$<)
 	@mkdir -p $(dir $@)
@@ -447,6 +455,18 @@ $(OBJDIR)/libs/%.d: $(BUILD_APP_LIB_PATH)/%.c
 	$(call TRACE,"2-APP",$@,$<)
 	@mkdir -p $(dir $@)
 	$(CC) -MM $(CPPFLAGS) $(CFLAGS) $< -MF $@ -MT $(@:.d=.c.o)
+
+$(OBJDIR)/libs/%.s.o: $(BUILD_APP_LIB_PATH)/%.s
+	$(call SHOW,"2.10-APP",$@,$<)
+	$(call TRACE,"2-APP",$@,$<)
+	@mkdir -p $(dir $@)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $< $(OUT_PREPOSITION)$@
+
+$(OBJDIR)/libs/%.S.o: $(BUILD_APP_LIB_PATH)/%.S
+	$(call SHOW,"2.11-APP",$@,$<)
+	$(call TRACE,"2-APP",$@,$<)
+	@mkdir -p $(dir $@)
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $< $(OUT_PREPOSITION)$@
 
 
 # 3- USER library sources
@@ -695,7 +715,6 @@ else ifeq ($(BUILD_CORE),x86)
 		$(call SHOW,"7.3-LINK",$@,.)
 		$(call TRACE,"7-LINK",$@,.)
 		$(CXX) $(LDFLAGS) $(OUT_PREPOSITION)$@ $(LOCAL_OBJS) $(TARGET_A) -L$(OBJDIR) -lm -lpthread
-		$(STRIP) $@
 
 # Energia platforms
 else ifeq ($(BUILD_CORE),cc3200)
@@ -756,7 +775,7 @@ else ifeq ($(PLATFORM),mbed)
 else ifeq ($(PLATFORM),RedBearLab)
 		$(call SHOW,"7.14-LINK",$@,.)
 		$(call TRACE,"7-LINK",$@,.)
-		$(CXX) $(LDFLAGS) -L$(OBJDIR) -Wl,--start-group $(LOCAL_OBJS) $(TARGET_A) $(LIBARY_A) -Wl,--end-group $(OUT_PREPOSITION)$@
+		$(CXX) $(LDFLAGS) -L$(OBJDIR) -Wl,--start-group $(LOCAL_OBJS) $(TARGET_A) $(LIBRARY_A) -Wl,--end-group $(OUT_PREPOSITION)$@
 
 else ifeq ($(PLATFORM),Spark)
 		$(call SHOW,"7.15-LINK",$@,.)
@@ -830,12 +849,18 @@ $(OBJDIR)/%.txt: $(OBJDIR)/%.out
 	echo ' -boot -sci8 -a $< -o $@'
 	$(OBJCOPY) -boot -sci8 -a $< -o $@
 
+$(OBJDIR)/%: $(OBJDIR)/%.elf
+	$(call SHOW,"8.5-COPY",$@,$<)
+	$(call TRACE,"8-COPY",$@,$<)
+	cp $< $@
+
 
 # Size of file
 # ----------------------------------
 #
 ifeq ($(TARGET_HEXBIN),$(TARGET_HEX))
-    HEXSIZE = $(SIZE) --target=ihex --totals $(CURRENT_DIR)/$(TARGET_HEX) | grep TOTALS | tr '\t' . | cut -d. -f2 | tr -d ' '
+#    HEXSIZE = $(SIZE) --target=ihex --totals $(CURRENT_DIR)/$(TARGET_HEX) | grep TOTALS | tr '\t' . | cut -d. -f2 | tr -d ' '
+    HEXSIZE = $(SIZE) --target=ihex --totals $(CURRENT_DIR)/$(TARGET_HEX) | grep TOTALS | awk '{t=$$3 + $$2} END {print t}'
     RAMSIZE = $(SIZE) $(CURRENT_DIR)/$(TARGET_ELF) | sed '1d' | awk '{t=$$3 + $$2} END {print t}'
 else ifeq ($(TARGET_HEXBIN),$(TARGET_BIN))
     BINSIZE = $(SIZE) --target=binary --totals $(CURRENT_DIR)/$(TARGET_BIN) | grep TOTALS | tr '\t' . | cut -d. -f2 | tr -d ' '
@@ -843,6 +868,9 @@ else ifeq ($(TARGET_HEXBIN),$(TARGET_BIN))
 else ifeq ($(TARGET_HEXBIN),$(TARGET_TXT))
     OUTSIZE = cat Builds/embeddedcomputing.map | grep '^.text' | awk 'BEGIN { OFS = "" } {print "0x",$$4}' | xargs printf '%d'
     RAMSIZE = cat Builds/embeddedcomputing.map | grep '^.ebss' | awk 'BEGIN { OFS = "" } {print "0x",$$4}' | xargs printf '%d'
+else ifeq ($(TARGET_HEXBIN),$(TARGET_DOT))
+    DOTSIZE = ls -all $(CURRENT_DIR)/$(TARGET_DOT) | awk '{print $$5}'
+    RAMSIZE = $(SIZE) $(CURRENT_DIR)/$(TARGET_ELF) | sed '1d' | awk '{t=$$3 + $$2} END {print t}'
 endif
 
 ifeq ($(MAX_FLASH_SIZE),)
@@ -985,7 +1013,7 @@ ifneq ($(MAKECMDGOALS),boards)
 		@echo 'Serial   	  	no serial port'
 # ~
     else ifeq ($(BOARD_PORT),ssh)
-		@echo 'Serial   	  	'$(YUN_ADDRESS)
+		@echo 'Serial   	  	'$(SSH_ADDRESS)
 # ~~
 
     else
@@ -997,7 +1025,7 @@ ifneq ($(MAKECMDGOALS),boards)
 		@echo $(CORE_LIBS_LIST)
 
 		@echo . Application libraries from $(basename $(APP_LIB_PATH)) | cut -d. -f1,2
-    ifneq ($(trim $(APP_LIBS_LIST)),)
+    ifneq ($(strip $(APP_LIBS_LIST)),)
 		@echo $(APP_LIBS_LIST)
     endif
     ifneq ($(BUILD_APP_LIBS_LIST),)
@@ -1069,7 +1097,8 @@ endif
 # Release management
 # ----------------------------------
 #
-RELEASE_NOW   := 262
+RELEASE_NOW   := 271
+
 EDITION_NOW   := embedXcode+ for Wiring / Arduino
 
 
@@ -1115,6 +1144,7 @@ else ifeq ($(BOARD_PORT),ssh)
 else
 # ~~
 		-screen -X kill
+		-screen -wipe
 		sleep 1
 
     ifeq ($(UPLOADER),stlink)
@@ -1168,38 +1198,78 @@ ifeq ($(BOARD_PORT),pgm)
 		@osascript -e 'tell application "Terminal" to do script "$(MDB) \"$(UTILITIES_PATH_SPACE)/mdb.txt\""'
 
 else ifeq ($(BOARD_PORT),ssh)
-		$(call SHOW,"10.2-UPLOAD",$(UPLOADER))
-		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 
-  ifeq ($(YUN_ADDRESS),)
-		$(eval YUN_ADDRESS = $(shell grep YUN_ADDRESS '$(CURRENT_DIR)/Configurations/Arduino Yun (WiFi Ethernet).xcconfig' | cut -d= -f 2- | sed 's/^ //'))
-  endif
+	$(eval BOARD_FILE = $(shell grep -rl $(CURRENT_DIR)/Configurations -e '$(BOARD_TAG) \| ssh'))
 
-  ifeq ($(YUN_PASSWORD),)
-		$(eval YUN_PASSWORD = $(shell grep YUN_PASSWORD '$(CURRENT_DIR)/Configurations/Arduino Yun (WiFi Ethernet).xcconfig' | cut -d= -f 2- | sed 's/^ //'))
-  endif
+    ifeq ($(SSH_ADDRESS),)
+		$(eval SSH_ADDRESS = $(shell grep ^SSH_ADDRESS '$(BOARD_FILE)' | cut -d= -f 2- | sed 's/^ //'))
+    endif
+
+    ifeq ($(SSH_PASSWORD),)
+		$(eval SSH_PASSWORD = $(shell grep ^SSH_PASSWORD '$(BOARD_FILE)' | cut -d= -f 2- | sed 's/^ //'))
+    endif
+
+    ifeq ($(SSH_ADDRESS),)
+		@echo 'SSH_ADDRESS not defined'
+		exit 2
+    endif
+
+    ifeq ($(SSH_PASSWORD),)
+		@echo 'SSH_PASSWORD not defined'
+		exit 2
+    endif
+
+
+    ifeq ($(BOARD_TAG),yun)
+
+        $(call SHOW,"10.2-UPLOAD",$(UPLOADER))
+        $(call TRACE,"10-UPLOAD",$(UPLOADER))
 
 		@echo "Uploading 1/3"
-		@$(UTILITIES_PATH)/sshpass -p '$(YUN_PASSWORD)' scp $(TARGET_HEX) root@$(YUN_ADDRESS):"/tmp/sketch.hex"
+		@$(UTILITIES_PATH)/sshpass -p '$(SSH_PASSWORD)' scp $(TARGET_HEX) root@$(SSH_ADDRESS):"/tmp/sketch.hex"
 
 		@echo "Uploading 2/3"
-		@$(UTILITIES_PATH)/sshpass -p '$(YUN_PASSWORD)' ssh root@$(YUN_ADDRESS) '/usr/bin/merge-sketch-with-bootloader.lua /tmp/sketch.hex'
-		@$(UTILITIES_PATH)/sshpass -p '$(YUN_PASSWORD)' ssh root@$(YUN_ADDRESS) '/usr/bin/kill-bridge'
+		@$(UTILITIES_PATH)/sshpass -p '$(SSH_PASSWORD)' ssh root@$(SSH_ADDRESS) '/usr/bin/merge-sketch-with-bootloader.lua /tmp/sketch.hex'
+		@$(UTILITIES_PATH)/sshpass -p '$(SSH_PASSWORD)' ssh root@$(SSH_ADDRESS) '/usr/bin/kill-bridge'
 
 		@echo "Uploading 3/3"
-		@$(UTILITIES_PATH)/sshpass -p '$(YUN_PASSWORD)' ssh root@$(YUN_ADDRESS) '/usr/bin/run-avrdude /tmp/sketch.hex';
+		@$(UTILITIES_PATH)/sshpass -p '$(SSH_PASSWORD)' ssh root@$(SSH_ADDRESS) '/usr/bin/run-avrdude /tmp/sketch.hex';
 		@sleep 1
+
+    else ifeq ($(BOARD_TAG),izmir_ec)
+
+		$(call SHOW,"10.3-UPLOAD",$(UPLOADER))
+		$(call TRACE,"10-UPLOAD",$(UPLOADER))
+
+		osascript -e 'tell application "Terminal" to do script "cd $(CURRENT_DIR); $(UTILITIES_PATH)/uploader_ssh.sh $(SSH_ADDRESS) $(SSH_PASSWORD) $(REMOTE_FOLDER) $(TARGET) -exec"'
+
+    else ifeq ($(BOARD_TAG),izmir_ec_yocto)
+    ifneq ($(MAKECMDGOALS),debug)
+
+		$(call SHOW,"10.21-UPLOAD",$(UPLOADER))
+		$(call TRACE,"10-UPLOAD",$(UPLOADER))
+
+		osascript -e 'tell application "Terminal" to do script "cd $(CURRENT_DIR); $(UTILITIES_PATH)/uploader_ssh.sh $(SSH_ADDRESS) $(SSH_PASSWORD) $(REMOTE_FOLDER) $(TARGET) -exec"'
+    endif
+    endif
 # ~~
+else ifeq ($(UPLOADER),izmir_tty)
+
+		$(call SHOW,"10.4-UPLOAD",$(UPLOADER))
+		$(call TRACE,"10-UPLOAD",$(UPLOADER))
+
+		$(UPLOADER_EXEC) $(UPLOADER_OPTS) $(TARGET_ELF) $(USED_SERIAL_PORT)
+
 
 else ifeq ($(UPLOADER),micronucleus)
-		$(call SHOW,"10.3-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.5-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 		osascript -e 'tell application "System Events" to display dialog "Click OK and plug the Digispark board into the USB port." buttons {"OK"} with icon POSIX file ("$(UTILITIES_PATH)/TemplateIcon.icns") with title "embedXcode"'
 
         $(AVRDUDE_EXEC) $(AVRDUDE_COM_OPTS) $(AVRDUDE_OPTS) -P$(USED_SERIAL_PORT) -Uflash:w:$(TARGET_HEX):i
 
 else ifeq ($(PLATFORM),RedBearLab)
-		$(call SHOW,"10.4-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.6-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 		$(OBJCOPY) -Oihex -Ibinary $(TARGET_BIN) $(TARGET_HEX)
 		$(AVRDUDE_EXEC) $(AVRDUDE_COM_OPTS) $(AVRDUDE_OPTS) -P$(USED_SERIAL_PORT) -Uflash:w:$(TARGET_HEX):i
@@ -1208,7 +1278,7 @@ else ifeq ($(PLATFORM),RedBearLab)
 else ifeq ($(UPLOADER),avrdude)
 
   ifeq ($(AVRDUDE_SPECIAL),1)
-		$(call SHOW,"10.5-UPLOAD",$(UPLOADER) $(AVRDUDE_PROGRAMMER))
+		$(call SHOW,"10.7-UPLOAD",$(UPLOADER) $(AVRDUDE_PROGRAMMER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER) $(AVRDUDE_PROGRAMMER))
         ifeq ($(AVR_FUSES),1)
             $(AVRDUDE_EXEC) -p$(AVRDUDE_MCU) -C$(AVRDUDE_CONF) -c$(AVRDUDE_PROGRAMMER) -e -U lock:w:$(ISP_LOCK_FUSE_PRE):m -U hfuse:w:$(ISP_HIGH_FUSE):m -U lfuse:w:$(ISP_LOW_FUSE):m -U efuse:w:$(ISP_EXT_FUSE):m
@@ -1219,7 +1289,7 @@ else ifeq ($(UPLOADER),avrdude)
         endif
 
   else
-		$(call SHOW,"10.6-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.8-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 
         ifeq ($(USED_SERIAL_PORT),)
@@ -1234,12 +1304,12 @@ else ifeq ($(UPLOADER),avrdude)
   endif
 
 else ifeq ($(UPLOADER),bossac)
-		$(call SHOW,"10.7-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.9-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 		$(BOSSAC) $(BOSSAC_OPTS) $(TARGET_BIN) -R
 
 else ifeq ($(UPLOADER),mspdebug)
-		$(call SHOW,"10.8-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.10-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
         
   ifeq ($(UPLOADER_PROTOCOL),tilib)
@@ -1251,7 +1321,7 @@ else ifeq ($(UPLOADER),mspdebug)
         
 else ifeq ($(UPLOADER),lm4flash)
     ifneq ($(MAKECMDGOALS),debug)
-		$(call SHOW,"10.9-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.11-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 		-killall openocd
 		$(UPLOADER_EXEC) $(UPLOADER_OPTS) $(TARGET_BIN)
@@ -1259,7 +1329,7 @@ else ifeq ($(UPLOADER),lm4flash)
 
 else ifeq ($(UPLOADER),cc3200serial)
     ifneq ($(MAKECMDGOALS),debug)
-		$(call SHOW,"10.10-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.12-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 		-killall openocd
 		@cp -r $(APP_TOOLS_PATH)/dll ./dll
@@ -1268,18 +1338,18 @@ else ifeq ($(UPLOADER),cc3200serial)
     endif
 
 else ifeq ($(UPLOADER),serial_loader2000)
-		$(call SHOW,"10.20-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.13-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 		$(UPLOADER_EXEC) -f $(TARGET_TXT) $(UPLOADER_OPTS) -p $(USED_SERIAL_PORT)
 
 else ifeq ($(UPLOADER),dfu-util)
-		$(call SHOW,"10.11-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.14-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 		$(UPLOADER_EXEC) $(UPLOADER_OPTS) -D $(TARGET_BIN) -R
 		sleep 4
 
 else ifeq ($(UPLOADER),teensy_flash)
-		$(call SHOW,"10.12-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.15-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 		$(TEENSY_POST_COMPILE) -file=$(basename $(notdir $(TARGET_HEX))) -path=$(dir $(abspath $(TARGET_HEX))) -tools=$(abspath $(TEENSY_FLASH_PATH))
 		sleep 2
@@ -1287,30 +1357,31 @@ else ifeq ($(UPLOADER),teensy_flash)
 		sleep 2
 
 else ifeq ($(UPLOADER),lightblue_loader)
-		$(call SHOW,"10.13-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.16-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 		$(LIGHTBLUE_POST_COMPILE) -board="$(BOARD_TAG)" -tools="$(abspath $(LIGHTBLUE_FLASH_PATH))" -path="$(dir $(abspath $(TARGET_HEX)))" -file="$(basename $(notdir $(TARGET_HEX)))"
 		sleep 2
 
 else ifeq ($(UPLOADER),izmirdl)
-		$(call SHOW,"10.14-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.17-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
-		$(UPLOADER_EXEC) $(UPLOADER_OPTS) $(TARGET_ELF) $(USED_SERIAL_PORT) 
+		$(UPLOADER_EXEC) $(UPLOADER_OPTS) $(TARGET_ELF) $(USED_SERIAL_PORT)
+#		osascript -e 'tell application "Terminal" to do script "cd $(CURRENT_DIR) ; $(UPLOADER_EXEC) $(UPLOADER_OPTS) $(TARGET_ELF) $(USED_SERIAL_PORT)"'
 
 else ifeq ($(UPLOADER),spark_usb)
-		$(call SHOW,"10.17-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.18-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 		$(PREPARE_EXEC) $(PREPARE_OPTS) "$(CURRENT_DIR)/$(TARGET_BIN)"
 		$(UPLOADER_EXEC) $(UPLOADER_OPTS) "$(CURRENT_DIR)/$(TARGET_BIN)"
 
 # ~
 else ifeq ($(UPLOADER),robotis-loader)
-		$(call SHOW,"10.15-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.19-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 		$(UPLOADER_EXEC) $(USED_SERIAL_PORT) $(TARGET_BIN)
 
 else ifeq ($(UPLOADER),RFDLoader)
-		$(call SHOW,"10.16-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.20-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 		$(UPLOADER_EXEC) -q $(USED_SERIAL_PORT) $(TARGET_HEX)
 
@@ -1318,7 +1389,7 @@ else ifeq ($(UPLOADER),spark_wifi)
     ifeq ($(SPARK_NAME),)
 		$(eval SPARK_NAME = $(shell $(UPLOADER_PATH)/node $(UPLOADER_PATH)/spark list | grep -e 'online' | cut -d\( -f2 | cut -d\) -f1 ))
     endif
-		$(call SHOW,"10.18-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.21-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 		$(UPLOADER_EXEC) $(UPLOADER_OPTS) "$(CURRENT_DIR)/$(TARGET_BIN)"
 		sleep 60
@@ -1326,7 +1397,7 @@ else ifeq ($(UPLOADER),spark_wifi)
 
 else ifeq ($(UPLOADER),cp)
     ifneq ($(MAKECMDGOALS),debug)
-		$(call SHOW,"10.19-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.22-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 # Option 1
 #		if [ -f $(USED_VOLUME_PORT)/*.bin ] ; then rm $(USED_VOLUME_PORT)/*.bin ; fi ; # */
@@ -1341,10 +1412,17 @@ else ifeq ($(UPLOADER),cp)
 
 else ifeq ($(UPLOADER),stlink)
     ifneq ($(MAKECMDGOALS),debug)
-		$(call SHOW,"10.17-UPLOAD",$(UPLOADER))
+		$(call SHOW,"10.23-UPLOAD",$(UPLOADER))
 		$(call TRACE,"10-UPLOAD",$(UPLOADER))
 		$(UPLOADER_PATH)/$(UPLOADER_EXEC) write $(CURRENT_DIR)/$(TARGET_BIN) $(UPLOADER_OPTS)
     endif
+
+
+else ifeq ($(UPLOADER),BsLoader.jar)
+	$(call SHOW,"10.24-UPLOAD",$(UPLOADER))
+	$(call TRACE,"10-UPLOAD",$(UPLOADER))
+	echo 'USED_SERIAL_PORT = '$(USED_SERIAL_PORT)
+	$(UPLOADER_EXEC) $(TARGET_HEX) $(USED_SERIAL_PORT) $(UPLOADER_OPTS)
 
 else
 		$(error No valid uploader)
@@ -1372,8 +1450,9 @@ endif
 serial_option:		reset
 ifneq ($(NO_SERIAL_CONSOLE),1)
     ifeq ($(BOARD_PORT),ssh)
-		osascript -e 'tell application "Terminal" to do script "$(UTILITIES_PATH_SPACE)/sshpass -p $(YUN_PASSWORD) ssh root@$(YUN_ADDRESS) exec telnet localhost 6571"'
-
+      ifeq ($(BOARD_TAG),yun)
+		osascript -e 'tell application "Terminal" to do script "$(UTILITIES_PATH_SPACE)/sshpass -p $(SSH_PASSWORD) ssh root@$(SSH_ADDRESS) exec telnet localhost 6571"'
+      endif
     else ifeq ($(AVRDUDE_NO_SERIAL_PORT),1)
 		@echo "The programmer provides no serial port"
 
@@ -1394,7 +1473,9 @@ serial:		reset
 		@echo "---- Serial ---- "
 # ~
 ifeq ($(BOARD_PORT),ssh)
-		osascript -e 'tell application "Terminal" to do script "$(UTILITIES_PATH_SPACE)/sshpass -p $(YUN_PASSWORD) ssh root@$(YUN_ADDRESS) exec telnet localhost 6571"'
+    ifeq ($(BOARD_TAG),yun)
+		osascript -e 'tell application "Terminal" to do script "$(UTILITIES_PATH_SPACE)/sshpass -p $(SSH_PASSWORD) ssh root@$(SSH_ADDRESS) exec telnet localhost 6571"'
+    endif
 # ~~
 
 else ifeq ($(AVRDUDE_NO_SERIAL_PORT),1)
@@ -1414,6 +1495,7 @@ size:
 		@echo "---- Size ----"
 		@if [ -f $(TARGET_HEX) ]; then echo 'Binary sketch size:  ' $(shell $(HEXSIZE)) $(MAX_FLASH_BYTES); echo; fi
 		@if [ -f $(TARGET_BIN) ]; then echo 'Binary sketch size:  ' $(shell $(BINSIZE)) $(MAX_FLASH_BYTES); echo; fi
+		@if [ -f $(TARGET_DOT) ]; then echo 'Binary sketch size:  ' $(shell $(DOTSIZE)) $(MAX_FLASH_BYTES); echo; fi
 		@if [ -f $(TARGET_ELF) ]; then echo 'Estimated SRAM used: ' $(shell $(RAMSIZE)) $(MAX_RAM_BYTES); echo; fi
 
 		@if [ -f $(TARGET_OUT) ]; then echo 'Binary sketch size:  ' $(shell $(OUTSIZE)) $(MAX_FLASH_BYTES); echo; fi
@@ -1465,7 +1547,7 @@ else
 		@if [ -d $(MPIDE_APP) ]; then echo "---- $(notdir $(basename $(MPIDE_APP))) ---- ";   \
 			grep .name $(MPIDE_PATH)/hardware/pic32/boards.txt | grep -v '^#';     echo; fi
 		@if [ -d $(DIGISPARK_APP) ]; then echo "---- $(notdir $(basename $(DIGISPARK_APP))) ---- ";  \
-			grep .name $(DIGISPARK_PATH)/hardware/digispark/boards.txt;  echo; fi
+			grep .name $(DIGISPARK_PATH)/hardware/digistump/boards.txt;  echo; fi
 
 		@if [ -d $(ENERGIA_APP) ]; then echo "---- $(notdir $(basename $(ENERGIA_APP))) MSP430 ---- "; \
 			grep .name $(ENERGIA_PATH)/hardware/msp430/boards.txt | grep -v '^#';  echo; fi
@@ -1477,7 +1559,8 @@ else
 		@if [ -d $(MAPLE_APP) ]; then echo "---- $(notdir $(basename $(MAPLE_APP))) ---- ";    \
 			grep .name $(MAPLE_PATH)/hardware/leaflabs/boards.txt;  echo; fi
 		@if [ -d $(GALILEO_APP) ]; then echo "---- $(notdir $(basename $(GALILEO_APP))) ---- ";    \
-			grep .name $(GALILEO_PATH)/hardware/arduino/x86/boards.txt;  echo; fi
+			grep .name $(GALILEO_PATH)/hardware/intel/i586-uclibc/boards.txt;  echo; fi
+			grep .name $(GALILEO_PATH)/hardware/intel/i686/boards.txt;  echo; fi
 
 # ~
 		@if [ -d $(LIGHTBLUE_APP) ]; then echo "---- $(notdir $(basename $(LIGHTBLUE_APP))) ---- ";    \
@@ -1489,6 +1572,10 @@ else
 
 		@if [ -d $(MICRODUINO_APP) ]; then echo "---- $(notdir $(basename $(MICRODUINO_APP))) ---- ";    \
 			grep .name $(MICRODUINO_PATH)/hardware/Microduino/boards.txt;  echo; fi
+
+		@if [ -d $(PANSTAMP_PATH) ]; then echo "---- $(notdir $(basename $(PANSTAMP_PATH))) ---- ";    \
+			grep .name $(PANSTAMP_PATH)/hardware/panstamp/avr/boards.txt;  echo; fi
+			grep .name $(PANSTAMP_PATH)/hardware/panstamp/msp430/boards.txt;  echo; fi
 
 # ~
 		@if [ -d $(ROBOTIS_APP) ]; then echo "---- $(notdir $(basename $(ROBOTIS_APP))) ---- ";   \
@@ -1504,7 +1591,7 @@ else
 			grep .name $(SPARK_PATH)/boards.txt;  echo; fi
 
 		@if [ -d $(TEENSY_APP) ]; then echo "---- $(notdir $(basename $(TEENSY_APP))) ---- ";   \
-			grep .name $(TEENSY_PATH)/hardware/teensy/boards.txt | grep -v menu;    echo; fi
+			grep .name $(TEENSY_PATH)/hardware/teensy/avr/boards.txt | grep -v menu;    echo; fi
 
 		@if [ -d $(WIRING_APP) ]; then echo "---- $(notdir $(basename $(WIRING_APP))) ---- ";  \
 			grep .name $(WIRING_PATH)/hardware/Wiring/boards.txt;   echo; fi
@@ -1549,5 +1636,6 @@ end_fast:
 
 
 .PHONY:	all clean depends upload raw_upload reset serial show_boards headers size document
+
 
 

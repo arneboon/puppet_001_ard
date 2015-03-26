@@ -8,7 +8,7 @@
 # All rights reserved
 #
 #
-# Last update: Oct 30, 2014 release 225
+# Last update: Mar 23, 2015 release 271
 
 
 
@@ -18,15 +18,16 @@
 BUILD_CORE       := avr
 
 UPLOADER            = teensy_flash
+# New with Teensyduino 1.21
 TEENSY_FLASH_PATH   = $(APPLICATION_PATH)/hardware/tools/avr/bin
 TEENSY_POST_COMPILE = $(TEENSY_FLASH_PATH)/teensy_post_compile
 TEENSY_REBOOT       = $(TEENSY_FLASH_PATH)/teensy_reboot
 
 APP_TOOLS_PATH   := $(APPLICATION_PATH)/hardware/tools/avr/bin
-CORE_LIB_PATH    := $(APPLICATION_PATH)/hardware/teensy/cores/teensy
+CORE_LIB_PATH    := $(APPLICATION_PATH)/hardware/teensy/avr/cores/teensy
 APP_LIB_PATH     := $(APPLICATION_PATH)/libraries
 
-BUILD_CORE_LIB_PATH  = $(APPLICATION_PATH)/hardware/teensy/cores/teensy3/avr
+BUILD_CORE_LIB_PATH  = $(APPLICATION_PATH)/hardware/teensy/avr/cores/teensy
 BUILD_CORE_LIBS_LIST = $(subst .h,,$(subst $(BUILD_CORE_LIB_PATH)/,,$(wildcard $(BUILD_CORE_LIB_PATH)/*.h))) # */
 BUILD_CORE_C_SRCS    = $(wildcard $(BUILD_CORE_LIB_PATH)/*.c) # */
 
@@ -39,12 +40,12 @@ BUILD_CORE_OBJS      = $(patsubst $(BUILD_CORE_LIB_PATH)/%,$(OBJDIR)/%,$(BUILD_C
 # wildcard required for ~ management
 # ?ibraries required for libraries and Libraries
 #
-ifeq ($(USER_PATH)/Library/Arduino/preferences.txt,)
+ifeq ($(USER_PATH)/Library/Arduino15/preferences.txt,)
     $(error Error: run Teensy once and define the sketchbook path)
 endif
 
 ifeq ($(wildcard $(SKETCHBOOK_DIR)),)
-    SKETCHBOOK_DIR = $(shell grep sketchbook.path $(wildcard ~/Library/Arduino/preferences.txt) | cut -d = -f 2)
+    SKETCHBOOK_DIR = $(shell grep sketchbook.path $(wildcard ~/Library/Arduino15/preferences.txt) | cut -d = -f 2)
 endif
 
 ifeq ($(wildcard $(SKETCHBOOK_DIR)),)
@@ -70,26 +71,53 @@ SIZE    = $(APP_TOOLS_PATH)/avr-size
 NM      = $(APP_TOOLS_PATH)/avr-nm
 
 
-#LDSCRIPT = $(call PARSE_BOARD,$(BOARD_TAG),build.linkscript)
-#VARIANT  = $(call PARSE_BOARD,$(BOARD_TAG),build.variant)
-#VARIANT_PATH = $(APPLICATION_PATH)/hardware/lm4f/variants/$(VARIANT)
-
 MCU_FLAG_NAME   = mmcu
-MCU             = atmega32u4
-F_CPU           = 16000000
+MCU             = $(call PARSE_BOARD,$(BOARD_TAG),build.mcu)
+F_CPU           = 16000000L
+OPTIMISATION    = $(call PARSE_BOARD,$(BOARD_TAG),build.flags.optimize)
 
-#EXTRA_LDFLAGS   = -T$(CORE_LIB_PATH)/$(LDSCRIPT) -mthumb
 
-# CXX = flags for C++ only
-# CPP = flags for both C and C++
+# Flags for gcc, g++ and linker
+# ----------------------------------
 #
-EXTRA_CPPFLAGS  = $(addprefix -D,$(PLATFORM_TAG)) -D__AVR_ATmega32U4__ -nostdlib -MMD
-EXTRA_CXXFLAGS  = -fno-rtti -felide-constructors -std=c++0x
+# Common CPPFLAGS for gcc, g++, assembler and linker
+#
+CPPFLAGS     = $(OPTIMISATION) $(WARNING_FLAGS)
+CPPFLAGS    += $(call PARSE_BOARD,$(BOARD_TAG),build.flags.cpu) -DF_CPU=$(F_CPU)
+CPPFLAGS    += $(call PARSE_BOARD,$(BOARD_TAG),build.flags.defs)
+CPPFLAGS    += $(call PARSE_BOARD,$(BOARD_TAG),build.flags.common)
+CPPFLAGS    += $(addprefix -D, $(PLATFORM_TAG)) -DARDUINO_ARCH_AVR
+CPPFLAGS    += -I$(CORE_LIB_PATH) -I$(VARIANT_PATH) -I$(OBJDIR)
 
+# Specific CFLAGS for gcc only
+# gcc uses CPPFLAGS and CFLAGS
+#
+CFLAGS       = $(call PARSE_BOARD,$(BOARD_TAG),build.flags.c)
 
-#EXTRA_CPPFLAGS += $(call PARSE_BOARD,$(BOARD_TAG),build.option3) # -D__MK20DX128__
+# Specific CXXFLAGS for g++ only
+# g++ uses CPPFLAGS and CXXFLAGS
+#
+CXXFLAGS     = $(call PARSE_BOARD,$(BOARD_TAG),build.flags.cpp)
 
-OBJCOPYFLAGS  = -R .eeprom -Oihex 
+# Specific ASFLAGS for gcc assembler only
+# gcc assembler uses CPPFLAGS and ASFLAGS
+#
+ASFLAGS      = $(call PARSE_BOARD,$(BOARD_TAG),build.flags.S)
+
+# Specific LDFLAGS for linker only
+# linker uses CPPFLAGS and LDFLAGS
+#
+t201         = $(call PARSE_BOARD,$(BOARD_TAG),build.flags.ld)
+t202         = $(subst {build.core.path},$(CORE_LIB_PATH),$(t201))
+t203         = $(subst {extra.time.local},$(shell date +%s),$(t202))
+LDFLAGS      = $(subst ", ,$(t203))
+LDFLAGS     += $(call PARSE_BOARD,$(BOARD_TAG),build.flags.cpu)
+LDFLAGS     += $(OPTIMISATION) $(call PARSE_BOARD,$(BOARD_TAG),build.flags.ldspecs)
+LDFLAGS     += $(call PARSE_BOARD,$(BOARD_TAG),build.flags.libs) --verbose
+
+# Target
+#
+OBJCOPYFLAGS  = -R .eeprom -Oihex
 TARGET_HEXBIN = $(TARGET_HEX)
 TARGET_EEP    = $(OBJDIR)/$(TARGET).eep
 

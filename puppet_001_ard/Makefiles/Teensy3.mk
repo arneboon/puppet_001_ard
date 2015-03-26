@@ -8,7 +8,7 @@
 # All rights reserved
 #
 #
-# Last update: Oct 30, 2014 release 225
+# Last update: Mar 23, 2015 release 271
 
 
 
@@ -22,11 +22,17 @@ TEENSY_FLASH_PATH   = $(APPLICATION_PATH)/hardware/tools
 TEENSY_POST_COMPILE = $(TEENSY_FLASH_PATH)/teensy_post_compile
 TEENSY_REBOOT       = $(TEENSY_FLASH_PATH)/teensy_reboot
 
-APP_TOOLS_PATH   := $(APPLICATION_PATH)/hardware/tools/arm-none-eabi/bin
-CORE_LIB_PATH    := $(APPLICATION_PATH)/hardware/teensy/cores/teensy3
+APP_TOOLS_PATH   := $(APPLICATION_PATH)/hardware/tools/arm/bin
+CORE_LIB_PATH    := $(APPLICATION_PATH)/hardware/teensy/avr/cores/teensy3
 APP_LIB_PATH     := $(APPLICATION_PATH)/libraries
 
-BUILD_CORE_LIB_PATH  = $(APPLICATION_PATH)/hardware/teensy/cores/teensy3/avr
+# Add .S files required by Teensyduino 1.21
+#
+CORE_AS_SRCS    = $(filter-out %main.cpp, $(wildcard $(CORE_LIB_PATH)/*.S)) # */
+t001            = $(patsubst %.S,%.S.o,$(filter %S, $(CORE_AS_SRCS)))
+FIRST_O_IN_A    = $(patsubst $(CORE_LIB_PATH)/%,$(OBJDIR)/%,$(t001))
+
+BUILD_CORE_LIB_PATH  = $(APPLICATION_PATH)/hardware/teensy/avr/cores/teensy3
 BUILD_CORE_LIBS_LIST = $(subst .h,,$(subst $(BUILD_CORE_LIB_PATH)/,,$(wildcard $(BUILD_CORE_LIB_PATH)/*/*.h))) # */
 BUILD_CORE_C_SRCS    = $(wildcard $(BUILD_CORE_LIB_PATH)/*.c) # */
 
@@ -39,12 +45,12 @@ BUILD_CORE_OBJS       = $(patsubst $(BUILD_CORE_LIB_PATH)/%,$(OBJDIR)/%,$(BUILD_
 # wildcard required for ~ management
 # ?ibraries required for libraries and Libraries
 #
-ifeq ($(USER_PATH)/Library/Arduino/preferences.txt,)
+ifeq ($(USER_PATH)/Library/Arduino15/preferences.txt,)
     $(error Error: run Arduino with Teensy plug-in once and define the sketchbook path)
 endif
 
 ifeq ($(wildcard $(SKETCHBOOK_DIR)),)
-    SKETCHBOOK_DIR = $(shell grep sketchbook.path $(wildcard ~/Library/Arduino/preferences.txt) | cut -d = -f 2)
+    SKETCHBOOK_DIR = $(shell grep sketchbook.path $(wildcard ~/Library/Arduino15/preferences.txt) | cut -d = -f 2)
 endif
 
 ifeq ($(wildcard $(SKETCHBOOK_DIR)),)
@@ -70,22 +76,50 @@ SIZE    = $(APP_TOOLS_PATH)/arm-none-eabi-size
 NM      = $(APP_TOOLS_PATH)/arm-none-eabi-nm
 
 
-LDSCRIPT = $(call PARSE_BOARD,$(BOARD_TAG),build.linkscript)
-#VARIANT  = $(call PARSE_BOARD,$(BOARD_TAG),build.variant)
-#VARIANT_PATH = $(APPLICATION_PATH)/hardware/lm4f/variants/$(VARIANT)
-
-MCU_FLAG_NAME   = mcpu
-MCU             = $(call PARSE_BOARD,$(BOARD_TAG),build.cpu)
+LDSCRIPT        = $(call PARSE_BOARD,$(BOARD_TAG),build.linkscript)
 F_CPU           = 96000000
+OPTIMISATION    = $(call PARSE_BOARD,$(BOARD_TAG),build.flags.optimize)
 
-EXTRA_LDFLAGS   = -mthumb -T$(CORE_LIB_PATH)/$(LDSCRIPT)
 
-# CXX = flags for C++ only
-# CPP = flags for both C and C++
+# Flags for gcc, g++ and linker
+# ----------------------------------
 #
-EXTRA_CPPFLAGS  = $(addprefix -D,$(PLATFORM_TAG)) $(call PARSE_BOARD,$(BOARD_TAG),build.option3) -nostdlib -mthumb -MMD
-CXXFLAGS  = -fno-exceptions -fno-rtti -felide-constructors -std=gnu++0x
+# Common CPPFLAGS for gcc, g++, assembler and linker
+#
+CPPFLAGS     = $(OPTIMISATION) $(WARNING_FLAGS)
+CPPFLAGS    += $(call PARSE_BOARD,$(BOARD_TAG),build.flags.cpu) -DF_CPU=$(F_CPU)
+CPPFLAGS    += $(call PARSE_BOARD,$(BOARD_TAG),build.flags.defs)
+CPPFLAGS    += $(call PARSE_BOARD,$(BOARD_TAG),build.flags.common)
+CPPFLAGS    += $(addprefix -D, $(PLATFORM_TAG))
+CPPFLAGS    += -I$(CORE_LIB_PATH) -I$(VARIANT_PATH) -I$(OBJDIR)
 
+# Specific CFLAGS for gcc only
+# gcc uses CPPFLAGS and CFLAGS
+#
+CFLAGS       = $(call PARSE_BOARD,$(BOARD_TAG),build.flags.c)
+
+# Specific CXXFLAGS for g++ only
+# g++ uses CPPFLAGS and CXXFLAGS
+#
+CXXFLAGS     = $(call PARSE_BOARD,$(BOARD_TAG),build.flags.cpp)
+
+# Specific ASFLAGS for gcc assembler only
+# gcc assembler uses CPPFLAGS and ASFLAGS
+#
+ASFLAGS      = $(call PARSE_BOARD,$(BOARD_TAG),build.flags.S)
+
+# Specific LDFLAGS for linker only
+#
+t301         = $(call PARSE_BOARD,$(BOARD_TAG),build.flags.ld)
+t302         = $(subst {build.core.path},$(CORE_LIB_PATH),$(t301))
+t303         = $(subst {extra.time.local},$(shell date +%s),$(t302))
+LDFLAGS      = $(subst ", ,$(t303))
+LDFLAGS     += $(call PARSE_BOARD,$(BOARD_TAG),build.flags.cpu)
+LDFLAGS     += $(OPTIMISATION) $(call PARSE_BOARD,$(BOARD_TAG),build.flags.ldspecs)
+LDFLAGS     += $(call PARSE_BOARD,$(BOARD_TAG),build.flags.libs)
+
+# Target
+#
 OBJCOPYFLAGS  = -R .eeprom -O ihex
 TARGET_HEXBIN = $(TARGET_HEX)
 TARGET_EEP    = $(OBJDIR)/$(TARGET).eep

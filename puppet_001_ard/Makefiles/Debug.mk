@@ -8,8 +8,7 @@
 # All rights reserved
 #
 #
-# Last update: Dec 06, 2014 release 240
-
+# Last update: Mar 23, 2015 release 271
 
 
 # Debug rules
@@ -100,7 +99,41 @@ ifneq ($(GDB),)
 		@echo "---- Launch client ----"
 		$(call SHOW,"11.10-DEBUG",$(UPLOADER))
 		$(call TRACE,"11-DEBUG",$(UPLOADER))
+		-killall i586-poky-linux-gdb
+		@sleep 5
+		@osascript -e 'tell application "Terminal" to do script "cd $(CURRENT_DIR_SPACE); $(GDB) -x \"$(UTILITIES_PATH_SPACE)/gdb.txt\""'
+
+  else ifeq ($(PLATFORM),IntelYocto)
+# Debug 1: Launch the server
+		@echo "---- Launch server ----"
+		$(call SHOW,"11.11-DEBUG",$(UPLOADER))
+		$(call TRACE,"11-DEBUG",$(UPLOADER))
 		-killall $(GDB)
+
+		osascript -e 'tell application "Terminal" to do script "cd $(CURRENT_DIR); $(UTILITIES_PATH)/uploader_ssh.sh $(SSH_ADDRESS) $(SSH_PASSWORD) $(REMOTE_FOLDER) $(TARGET) -debug"'
+		@sleep 5
+
+# Debug 2: Launch the client
+		@echo "---- Launch client ----"
+		$(call SHOW,"11.12-DEBUG",$(UPLOADER))
+		$(call TRACE,"11-DEBUG",$(UPLOADER))
+		@sleep 5
+		@osascript -e 'tell application "Terminal" to do script "cd $(CURRENT_DIR_SPACE); $(GDB) -x \"$(UTILITIES_PATH_SPACE)/gdb.txt\""'
+
+else ifeq ($(PLATFORM),Edison)
+# Debug 1: Launch the server
+		@echo "---- Launch server ----"
+		$(call SHOW,"11.12-DEBUG",$(UPLOADER))
+		$(call TRACE,"11-DEBUG",$(UPLOADER))
+		-killall $(GDB)
+
+		osascript -e 'tell application "Terminal" to do script "cd $(CURRENT_DIR); $(UTILITIES_PATH)/uploader_ssh.sh $(SSH_ADDRESS) $(SSH_PASSWORD) $(REMOTE_FOLDER) $(TARGET) -debug"'
+		@sleep 5
+
+# Debug 2: Launch the client
+		@echo "---- Launch client ----"
+		$(call SHOW,"11.12-DEBUG",$(UPLOADER))
+		$(call TRACE,"11-DEBUG",$(UPLOADER))
 		@sleep 5
 		@osascript -e 'tell application "Terminal" to do script "cd $(CURRENT_DIR_SPACE); $(GDB) -x \"$(UTILITIES_PATH_SPACE)/gdb.txt\""'
 
