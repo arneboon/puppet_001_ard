@@ -91,6 +91,7 @@
 
 //#define SSID "PerformanceEngine"
 //#define PASS "cex8zu86StAstEn"
+#include "Config.h"
 
 
 //-------------------------------------------------
@@ -184,6 +185,7 @@ void setup()
     flex.broadcast(true);
     
     wifiShield.setup(SSID, PASS);
+    wifiShield.setup(WifiCredentials::ssid, WifiCredentials::passphrase);
     
     Udp.begin(8888);
     
