@@ -128,3 +128,17 @@ void WifiShield::printWifiData() {
     Serial.print(":");
     Serial.println(mac[0], HEX);
 }
+
+String WifiShield::getId() {
+    byte mac[6];
+    WiFi.macAddress(mac);
+    this->macaddress = "";
+//    this->macaddress += String(mac[5], HEX);
+//    this->macaddress += String(mac[4], HEX);
+//    this->macaddress += String(mac[3], HEX);
+    this->macaddress += String(mac[2], HEX);
+    this->macaddress += String(mac[1], HEX);
+    this->macaddress += String(mac[0], HEX);
+    
+    return this->macaddress;
+}

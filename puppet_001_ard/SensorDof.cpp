@@ -183,33 +183,6 @@ void SensorDof::print() {
     Serial.println();
 }
 
-//void SensorDof::send() {
-//    if (this->bBroadcast) {
-//        Serial.print("send: ");
-//        Serial.print(this->address);
-//        Serial.print(", ");
-//        Serial.print(this->roll);
-//        Serial.print(", ");
-//        Serial.print(this->pitch);
-//        Serial.print(", ");
-//        Serial.print(this->heading);
-//        Serial.println();
-//        
-//        msg.empty();
-//        msg.add((int16_t) this->roll);
-//        msg.add((int16_t) this->pitch);
-//        msg.add((int16_t) this->heading);
-//        msg.add((float) this->accelleration.x);
-//        msg.add((float) this->accelleration.y);
-//        msg.add((float) this->accelleration.z);
-//        
-//        Udp.beginPacket(this->outIp, this->outPort);
-//        msg.send(Udp);
-//        Udp.endPacket();
-//        msg.empty();
-//    }
-//}
-
 void SensorDof::send() {
     if (this->bBroadcast) {
         Serial.print("send: ");
@@ -228,25 +201,58 @@ void SensorDof::send() {
         Serial.print(this->accellerationZ);
         Serial.println();
         
-        this->bndl.add("/mc/dof/rph")
-            .add((int16_t) this->roll)
-            .add((int16_t) this->pitch)
-            .add((int16_t) this->heading);
+        msg.empty();
+        msg.add((int16_t) this->roll);
+        msg.add((int16_t) this->pitch);
+        msg.add((int16_t) this->heading);
+        msg.add((float) this->accellerationX);
+        msg.add((float) this->accellerationY);
+        msg.add((float) this->accellerationZ);
         
         Udp.beginPacket(this->outIp, this->outPort);
-        this->bndl.send(Udp);
+        msg.send(Udp);
         Udp.endPacket();
-        this->bndl.empty();
-        
-        this->bndl.add("/mc/dof/accelleration/xyz")
-            .add((int16_t) this->accellerationX)
-            .add((int16_t) this->accellerationY)
-            .add((int16_t) this->accellerationZ);
-
-        Udp.beginPacket(this->outIp, this->outPort);
-        this->bndl.send(Udp);
-        Udp.endPacket();
-        this->bndl.empty();
+        msg.empty();
     }
 }
+
+//void SensorDof::send() {
+//    if (this->bBroadcast) {
+//        Serial.print("send: ");
+//        Serial.print(this->address);
+//        Serial.print(", ");
+//        Serial.print(this->roll);
+//        Serial.print(", ");
+//        Serial.print(this->pitch);
+//        Serial.print(", ");
+//        Serial.print(this->heading);
+//        Serial.print(", ");
+//        Serial.print(this->accellerationX);
+//        Serial.print(", ");
+//        Serial.print(this->accellerationY);
+//        Serial.print(", ");
+//        Serial.print(this->accellerationZ);
+//        Serial.println();
+//        
+//        this->bndl.add("/mc/dof/rph")
+//            .add((int16_t) this->roll)
+//            .add((int16_t) this->pitch)
+//            .add((int16_t) this->heading);
+//        
+//        Udp.beginPacket(this->outIp, this->outPort);
+//        this->bndl.send(Udp);
+//        Udp.endPacket();
+//        this->bndl.empty();
+//        
+//        this->bndl.add("/mc/dof/accelleration/xyz")
+//            .add((int16_t) this->accellerationX)
+//            .add((int16_t) this->accellerationY)
+//            .add((int16_t) this->accellerationZ);
+//
+//        Udp.beginPacket(this->outIp, this->outPort);
+//        this->bndl.send(Udp);
+//        Udp.endPacket();
+//        this->bndl.empty();
+//    }
+//}
 

@@ -1,5 +1,8 @@
 # puppet_001_ard
-Maplap research project sensing & tracking.
+Maplab research project sensing & tracking.  
+
+# Disclamer
+This project is currently under development and not production ready.  
 
 # IDE
 Arduino application 1.6.1: http://www.arduino.cc/en/Main/OldSoftwareReleases  
@@ -18,7 +21,7 @@ $ cd wifishield/firmware/scripts
 $ sudo sh ArduinoWifiShield_upgrade_mac.sh -a /Applications/Arduino.app/Contents/Resources/Java -f shield  
 
 # Dependencies
-Make sure to clone into your sketchbook/libraries folder:
+Make sure to clone into your sketchbook/libraries folder:  
 https://github.com/adafruit/Adafruit_Sensor  
 https://github.com/adafruit/Adafruit_LSM303DLHC  
 https://github.com/adafruit/Adafruit_L3GD20_U  
@@ -47,11 +50,10 @@ see setup() function in .ino file in root folder for current address listing
  * range 0, 1
 * /mc/distance
  * range 0-400 (centimeters)
-* /mc/dof/rph
+* /mc/dof/rphxyz
  * roll: range -100 - 100
  * pitch: range -100 - 100
  * heading: range 0 - 360
-* /mc/dof/accelleration/xyz
  * x: range -100 - 100
  * y: range -100 - 100
  * z: range -100 - 100

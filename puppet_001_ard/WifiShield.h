@@ -73,6 +73,8 @@ public:
     void setup(String _ssid, String _pass);
     void loop();
     
+    String getId();
+    
 private:
     
     void printCurrentNet();
@@ -81,6 +83,8 @@ private:
     String ssid;
     String pass;
     int status;
+    
+    String macaddress;
     
 };
 

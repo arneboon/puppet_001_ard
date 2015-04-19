@@ -101,7 +101,7 @@ namespace Settings {
      * SensorDistance: Wait 50ms between pings (about 20 pings/sec).
      *  29ms should be the shortest delay between pings.
      */
-    const int16_t delay = 30;
+    const int16_t delay = 30;    
 }
 
 #endif

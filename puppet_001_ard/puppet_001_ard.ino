@@ -86,16 +86,25 @@ void setup()
     Serial.println("----------------");
     Serial.println("setup");
     
-    magnetAnalog.setup("/mc/magnet/analog", PinLayout::magnet_analog, INPUT);
-    magnetDigital.setup("/mc/magnet/digital", PinLayout::magnet_digital, INPUT_PULLUP);
-    btn1.setup("/mc/button/1", PinLayout::btn_1, INPUT_PULLUP);
-    btn2.setup("/mc/button/2", PinLayout::btn_2, INPUT_PULLUP);
-    btn3.setup("/mc/button/3", PinLayout::btn_3, INPUT_PULLUP);
-    btn4.setup("/mc/button/4", PinLayout::btn_4, INPUT_PULLUP);
-    btn5.setup("/mc/button/5", PinLayout::btn_5, INPUT_PULLUP);
-    distance.setup("/mc/distance", PinLayout::distance_trigger, PinLayout::distance_echo, Settings::distance_mac_cm, Settings::median_iterations);
-    dof.setup("/mc/dof", PinLayout::ninedof_sda, PinLayout::ninedof_slc);
-    flex.setup("/mc/flex", PinLayout::flex, INPUT);
+    wifiShield.setup(WifiCredentials::ssid, WifiCredentials::passphrase);
+    Udp.begin(8888);
+    
+//    String id = "";
+    String id = wifiShield.getId() + "/";
+    
+    pinMode(PinLayout::led, OUTPUT);
+    digitalWrite(PinLayout::led, HIGH);
+    
+    magnetAnalog.setup("/mc/"+id+"magnet/analog", PinLayout::magnet_analog, INPUT);
+    magnetDigital.setup("/mc/"+id+"magnet/digital", PinLayout::magnet_digital, INPUT_PULLUP);
+    btn1.setup("/mc/"+id+"button/1", PinLayout::btn_1, INPUT_PULLUP);
+    btn2.setup("/mc/"+id+"button/2", PinLayout::btn_2, INPUT_PULLUP);
+    btn3.setup("/mc/"+id+"button/3", PinLayout::btn_3, INPUT_PULLUP);
+    btn4.setup("/mc/"+id+"button/4", PinLayout::btn_4, INPUT_PULLUP);
+    btn5.setup("/mc/"+id+"button/5", PinLayout::btn_5, INPUT_PULLUP);
+    distance.setup("/mc/"+id+"distance", PinLayout::distance_trigger, PinLayout::distance_echo, Settings::distance_mac_cm, Settings::median_iterations);
+    dof.setup("/mc/"+id+"dof/rphxyz", PinLayout::ninedof_sda, PinLayout::ninedof_slc);
+    flex.setup("/mc/"+id+"flex", PinLayout::flex, INPUT);
     
     magnetAnalog.broadcast(true);
     magnetDigital.broadcast(true);
@@ -108,12 +117,6 @@ void setup()
     dof.broadcast(true);
     flex.broadcast(true);
     
-    wifiShield.setup(WifiCredentials::ssid, WifiCredentials::passphrase);
-    
-    Udp.begin(8888);
-    
-    pinMode(PinLayout::led, OUTPUT);
-    digitalWrite(PinLayout::led, HIGH);
 }
 
 //-------------------------------------------------
