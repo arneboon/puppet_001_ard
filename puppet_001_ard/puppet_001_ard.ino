@@ -54,91 +54,17 @@
 
 //-------------------------------------------------
 #include "WifiShield.h"
-
+#include <WiFiUdp.h>
 #include "SensorAnalog.h"
 #include "SensorDigital.h"
 #include "SensorButton.h"
 #include "SensorDistance.h"
 #include "SensorDof.h"
-
-#include <WiFiUdp.h>
-
-//-------------------------------------------------
-#define PIN_LED A3
-#define PIN_MANGNET_ANALOG A1
-#define PIN_MAGNET_DIGITAL A2
-#define PIN_NINEDOF_SDA A4
-#define PIN_NINEDOF_SLC A5
-#define PIN_BTN_1 2
-#define PIN_BTN_2 3
-#define PIN_BTN_3 5
-#define PIN_BTN_4 6
-#define PIN_DISTANCE_TRIGGER 8
-#define PIN_DISTANCE_ECHO 8
-#define PIN_FLEX A0
-
-//#define SSID "HG655D-A14F3D"
-//#define PASS "PU7LAKLW"
-
-//#define SSID "Vechtclub XL F1.19"
-//#define PASS "groentegorilla"
-
-//#define SSID "FRITZ!Box Fon WLAN 7360"
-//#define PASS "48075078634276363403"
-
-#define SSID "HKU_WPA"
-#define PASS "cex8zu86StAstEn"
-
-//#define SSID "PerformanceEngine"
-//#define PASS "cex8zu86StAstEn"
 #include "Config.h"
-
-
-//-------------------------------------------------
-
-//-- Labkit Manual Routing
-/***
- #define PIN_LED A3
- #define PIN_MANGNET_ANALOG A1
- #define PIN_MAGNET_DIGITAL A2
- #define PIN_NINEDOF_SDA A4
- #define PIN_NINEDOF_SLC A5
- #define PIN_BTN_1 2
- #define PIN_BTN_2 3
- #define PIN_BTN_3 5
- #define PIN_BTN_4 6
- #define PIN_DISTANCE_TRIGGER 8
- #define PIN_DISTANCE_ECHO 8
- #define PIN_FLEX A0
- ***/
-
-//-- Maplab Board 001 PCB
-#define PIN_LED 45
-#define PIN_MANGNET_ANALOG A9
-#define PIN_MAGNET_DIGITAL 23
-#define PIN_NINEDOF_SDA 20
-#define PIN_NINEDOF_SLC 21
-#define PIN_BTN_1 35
-#define PIN_BTN_2 37
-#define PIN_BTN_3 39
-#define PIN_BTN_4 41
-#define PIN_BTN_5 43
-#define PIN_DISTANCE_TRIGGER A11
-#define PIN_DISTANCE_ECHO A11
-#define PIN_FLEX A10
-
-//-------------------------------------------------
-#define DISTANCE_MAX_CM 400
-#define MEDIAN_ITERATIONS 0
-
-/* NOTE
- * SensorDistance: Wait 50ms between pings (about 20 pings/sec).
- *  29ms should be the shortest delay between pings.
- */
-#define DELAY 30
 
 //-------------------------------------------------
 WifiShield wifiShield;
+WiFiUDP Udp;
 
 SensorDigital magnetDigital;
 SensorAnalog magnetAnalog;
@@ -151,8 +77,6 @@ SensorDistance distance;
 SensorDof dof;
 SensorAnalog flex;
 
-WiFiUDP Udp;
-
 //-------------------------------------------------
 void setup()
 {   
@@ -162,16 +86,16 @@ void setup()
     Serial.println("----------------");
     Serial.println("setup");
     
-    magnetAnalog.setup("/mc/magnet/analog", PIN_MANGNET_ANALOG, INPUT);
-    magnetDigital.setup("/mc/magnet/digital", PIN_MAGNET_DIGITAL, INPUT_PULLUP);
-    btn1.setup("/mc/button/1", PIN_BTN_1, INPUT_PULLUP);
-    btn2.setup("/mc/button/2", PIN_BTN_2, INPUT_PULLUP);
-    btn3.setup("/mc/button/3", PIN_BTN_3, INPUT_PULLUP);
-    btn4.setup("/mc/button/4", PIN_BTN_4, INPUT_PULLUP);
-    btn5.setup("/mc/button/5", PIN_BTN_5, INPUT_PULLUP);
-    distance.setup("/mc/distance", PIN_DISTANCE_TRIGGER, PIN_DISTANCE_ECHO, DISTANCE_MAX_CM, MEDIAN_ITERATIONS);
-    dof.setup("/mc/dof", PIN_NINEDOF_SDA, PIN_NINEDOF_SLC);
-    flex.setup("/mc/flex", PIN_FLEX, INPUT);
+    magnetAnalog.setup("/mc/magnet/analog", PinLayout::magnet_analog, INPUT);
+    magnetDigital.setup("/mc/magnet/digital", PinLayout::magnet_digital, INPUT_PULLUP);
+    btn1.setup("/mc/button/1", PinLayout::btn_1, INPUT_PULLUP);
+    btn2.setup("/mc/button/2", PinLayout::btn_2, INPUT_PULLUP);
+    btn3.setup("/mc/button/3", PinLayout::btn_3, INPUT_PULLUP);
+    btn4.setup("/mc/button/4", PinLayout::btn_4, INPUT_PULLUP);
+    btn5.setup("/mc/button/5", PinLayout::btn_5, INPUT_PULLUP);
+    distance.setup("/mc/distance", PinLayout::distance_trigger, PinLayout::distance_echo, Settings::distance_mac_cm, Settings::median_iterations);
+    dof.setup("/mc/dof", PinLayout::ninedof_sda, PinLayout::ninedof_slc);
+    flex.setup("/mc/flex", PinLayout::flex, INPUT);
     
     magnetAnalog.broadcast(true);
     magnetDigital.broadcast(true);
@@ -184,13 +108,12 @@ void setup()
     dof.broadcast(true);
     flex.broadcast(true);
     
-    wifiShield.setup(SSID, PASS);
     wifiShield.setup(WifiCredentials::ssid, WifiCredentials::passphrase);
     
     Udp.begin(8888);
     
-    pinMode(PIN_LED, OUTPUT);
-    digitalWrite(PIN_LED, HIGH);
+    pinMode(PinLayout::led, OUTPUT);
+    digitalWrite(PinLayout::led, HIGH);
 }
 
 //-------------------------------------------------
@@ -206,5 +129,5 @@ void loop() {
     dof.loop();
     flex.loop();
     
-    delay(DELAY);
+    delay(Settings::delay);
 }

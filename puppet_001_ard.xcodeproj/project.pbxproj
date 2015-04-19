@@ -999,6 +999,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		143987331AE3B4F0002EA023 /* Config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
 		143EE56A1AA506AA00CCB151 /* SensorButton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SensorButton.cpp; sourceTree = "<group>"; };
 		143EE56B1AA506AA00CCB151 /* SensorButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorButton.h; sourceTree = "<group>"; };
 		1454A2521AA38FB200834EB0 /* Index */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Index; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2145,6 +2146,7 @@
 			isa = PBXGroup;
 			children = (
 				1454A2551AA38FB200834EB0 /* main.cpp */,
+				143987331AE3B4F0002EA023 /* Config.h */,
 				1454A2D31AA38FB400834EB0 /* puppet_001_ard.ino */,
 				1454A3041AA3909400834EB0 /* WifiShield.cpp */,
 				1454A3051AA3909400834EB0 /* WifiShield.h */,
