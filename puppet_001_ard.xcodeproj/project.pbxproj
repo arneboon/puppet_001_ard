@@ -1129,6 +1129,16 @@
 		1454A3041AA3909400834EB0 /* WifiShield.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WifiShield.cpp; sourceTree = "<group>"; };
 		1454A3051AA3909400834EB0 /* WifiShield.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WifiShield.h; sourceTree = "<group>"; };
 		145CC1681AA892DA0083E434 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		147A34151ADFF02B009A0E90 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		147A34161ADFF02B009A0E90 /* Adafruit_10DOF.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Adafruit_10DOF.cpp; sourceTree = "<group>"; };
+		147A34171ADFF02B009A0E90 /* Adafruit_10DOF.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Adafruit_10DOF.h; sourceTree = "<group>"; };
+		147A34191ADFF02B009A0E90 /* ahrs.pde */ = {isa = PBXFileReference; lastKnownFileType = text; path = ahrs.pde; sourceTree = "<group>"; };
+		147A341C1ADFF02B009A0E90 /* cuberotate.pde */ = {isa = PBXFileReference; lastKnownFileType = text; path = cuberotate.pde; sourceTree = "<group>"; };
+		147A341E1ADFF02B009A0E90 /* bunny.mtl */ = {isa = PBXFileReference; lastKnownFileType = text; path = bunny.mtl; sourceTree = "<group>"; };
+		147A341F1ADFF02B009A0E90 /* bunny.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = bunny.obj; sourceTree = "<group>"; };
+		147A34211ADFF02B009A0E90 /* pitchrollheading.pde */ = {isa = PBXFileReference; lastKnownFileType = text; path = pitchrollheading.pde; sourceTree = "<group>"; };
+		147A34221ADFF02B009A0E90 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		147A34241ADFF02B009A0E90 /* tester.pde */ = {isa = PBXFileReference; lastKnownFileType = text; path = tester.pde; sourceTree = "<group>"; };
 		14FC2D951AA63A7800518103 /* SensorDistance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SensorDistance.cpp; sourceTree = "<group>"; };
 		14FC2D961AA63A7800518103 /* SensorDistance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorDistance.h; sourceTree = "<group>"; };
 		AAAA150301192118AA000006 /* abi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = abi.cpp; sourceTree = "<group>"; };
@@ -2308,6 +2318,71 @@
 				1454A2D21AA38FB400834EB0 /* uploader_robotis.py */,
 			);
 			name = Utilities;
+			sourceTree = "<group>";
+		};
+		147A34141ADFF02B009A0E90 /* Adafruit_10DOF */ = {
+			isa = PBXGroup;
+			children = (
+				147A34151ADFF02B009A0E90 /* .gitignore */,
+				147A34161ADFF02B009A0E90 /* Adafruit_10DOF.cpp */,
+				147A34171ADFF02B009A0E90 /* Adafruit_10DOF.h */,
+				147A34181ADFF02B009A0E90 /* ahrs */,
+				147A34201ADFF02B009A0E90 /* pitchrollheading */,
+				147A34221ADFF02B009A0E90 /* README.md */,
+				147A34231ADFF02B009A0E90 /* tester */,
+			);
+			path = Adafruit_10DOF;
+			sourceTree = "<group>";
+		};
+		147A34181ADFF02B009A0E90 /* ahrs */ = {
+			isa = PBXGroup;
+			children = (
+				147A34191ADFF02B009A0E90 /* ahrs.pde */,
+				147A341A1ADFF02B009A0E90 /* processing */,
+			);
+			path = ahrs;
+			sourceTree = "<group>";
+		};
+		147A341A1ADFF02B009A0E90 /* processing */ = {
+			isa = PBXGroup;
+			children = (
+				147A341B1ADFF02B009A0E90 /* cuberotate */,
+			);
+			path = processing;
+			sourceTree = "<group>";
+		};
+		147A341B1ADFF02B009A0E90 /* cuberotate */ = {
+			isa = PBXGroup;
+			children = (
+				147A341C1ADFF02B009A0E90 /* cuberotate.pde */,
+				147A341D1ADFF02B009A0E90 /* data */,
+			);
+			path = cuberotate;
+			sourceTree = "<group>";
+		};
+		147A341D1ADFF02B009A0E90 /* data */ = {
+			isa = PBXGroup;
+			children = (
+				147A341E1ADFF02B009A0E90 /* bunny.mtl */,
+				147A341F1ADFF02B009A0E90 /* bunny.obj */,
+			);
+			path = data;
+			sourceTree = "<group>";
+		};
+		147A34201ADFF02B009A0E90 /* pitchrollheading */ = {
+			isa = PBXGroup;
+			children = (
+				147A34211ADFF02B009A0E90 /* pitchrollheading.pde */,
+			);
+			path = pitchrollheading;
+			sourceTree = "<group>";
+		};
+		147A34231ADFF02B009A0E90 /* tester */ = {
+			isa = PBXGroup;
+			children = (
+				147A34241ADFF02B009A0E90 /* tester.pde */,
+			);
+			path = tester;
 			sourceTree = "<group>";
 		};
 		AAAA150301192118AA000000 /* Resources */ = {
@@ -4269,6 +4344,7 @@
 		AAAA150301192118AA000347 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				147A34141ADFF02B009A0E90 /* Adafruit_10DOF */,
 				AAAA150301192118AA000348 /* Adafruit_9DOF */,
 				AAAA150301192118AA000351 /* Adafruit_CC3000 */,
 				AAAA150301192118AA000370 /* Adafruit_L3GD20_U */,

@@ -92,11 +92,46 @@
 //#define SSID "PerformanceEngine"
 //#define PASS "cex8zu86StAstEn"
 
+
+//-------------------------------------------------
+
+//-- Labkit Manual Routing
+/***
+ #define PIN_LED A3
+ #define PIN_MANGNET_ANALOG A1
+ #define PIN_MAGNET_DIGITAL A2
+ #define PIN_NINEDOF_SDA A4
+ #define PIN_NINEDOF_SLC A5
+ #define PIN_BTN_1 2
+ #define PIN_BTN_2 3
+ #define PIN_BTN_3 5
+ #define PIN_BTN_4 6
+ #define PIN_DISTANCE_TRIGGER 8
+ #define PIN_DISTANCE_ECHO 8
+ #define PIN_FLEX A0
+ ***/
+
+//-- Maplab Board 001 PCB
+#define PIN_LED 45
+#define PIN_MANGNET_ANALOG A9
+#define PIN_MAGNET_DIGITAL 23
+#define PIN_NINEDOF_SDA 20
+#define PIN_NINEDOF_SLC 21
+#define PIN_BTN_1 35
+#define PIN_BTN_2 37
+#define PIN_BTN_3 39
+#define PIN_BTN_4 41
+#define PIN_BTN_5 43
+#define PIN_DISTANCE_TRIGGER A11
+#define PIN_DISTANCE_ECHO A11
+#define PIN_FLEX A10
+
+//-------------------------------------------------
 #define DISTANCE_MAX_CM 400
 #define MEDIAN_ITERATIONS 0
 
 /* NOTE
- * SensorDistance: Wait 50ms between pings (about 20 pings/sec). 
+ * SensorDistance: Wait 50ms between pings (about 20 pings/sec).
  *  29ms should be the shortest delay between pings.
  */
 #define DELAY 30
@@ -110,6 +145,7 @@ SensorButton btn1;
 SensorButton btn2;
 SensorButton btn3;
 SensorButton btn4;
+SensorButton btn5;
 SensorDistance distance;
 SensorDof dof;
 SensorAnalog flex;
@@ -131,6 +167,7 @@ void setup()
     btn2.setup("/mc/button/2", PIN_BTN_2, INPUT_PULLUP);
     btn3.setup("/mc/button/3", PIN_BTN_3, INPUT_PULLUP);
     btn4.setup("/mc/button/4", PIN_BTN_4, INPUT_PULLUP);
+    btn5.setup("/mc/button/5", PIN_BTN_5, INPUT_PULLUP);
     distance.setup("/mc/distance", PIN_DISTANCE_TRIGGER, PIN_DISTANCE_ECHO, DISTANCE_MAX_CM, MEDIAN_ITERATIONS);
     dof.setup("/mc/dof", PIN_NINEDOF_SDA, PIN_NINEDOF_SLC);
     flex.setup("/mc/flex", PIN_FLEX, INPUT);
@@ -141,6 +178,7 @@ void setup()
     btn2.broadcast(true);
     btn3.broadcast(true);
     btn4.broadcast(true);
+    btn5.broadcast(true);
     distance.broadcast(true);
     dof.broadcast(true);
     flex.broadcast(true);
@@ -161,6 +199,7 @@ void loop() {
     btn2.loop();
     btn3.loop();
     btn4.loop();
+    btn5.loop();
     distance.loop();
     dof.loop();
     flex.loop();

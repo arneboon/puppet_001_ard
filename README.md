@@ -2,12 +2,28 @@
 Maplap research project sensing & tracking.
 
 # IDE
-embedXcode  
+Arduino application 1.6.1: http://www.arduino.cc/en/Main/OldSoftwareReleases (install in default location)
+embedXcode: http://embedxcode.weebly.com/  
 
 # Hardware
 Board: Arduino Mega 2560  
 Shield 1: Arduino Wifi Shield  
-Shield 2: Custom protoboard (sensor to pin routing)  
+Shield 2: Custom Maplab Board
+
+# Preparation
+Upgrade wifi shield to v1.1.0: http://www.arduino.cc/en/Hacking/WiFiShieldFirmwareUpgrading
+More: http://katrinaeg.com/arduino-wifi-firmware-upgrade.html
+$ cd wifishield/firmware/scripts
+$ sudo sh ArduinoWifiShield_upgrade_mac.sh -a /Applications/Arduino.app/Contents/Resources/Java -f shield
+
+# Dependencies
+Make sure to clone into your sketchbook/libraries folder:
+https://github.com/adafruit/Adafruit_Sensor
+https://github.com/adafruit/Adafruit_LSM303DLHC
+https://github.com/adafruit/Adafruit_L3GD20_U
+https://github.com/adafruit/Adafruit_BMP085_Unified
+https://github.com/adafruit/Adafruit_9DOF
+https://github.com/adafruit/Adafruit_10DOF
 
 # OSC port & ip
 port: 1234 (standard isadora)  
