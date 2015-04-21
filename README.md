@@ -22,13 +22,13 @@ Shield 2: Custom Maplab Board
 # Preparation
 Upgrade wifi shield to v1.1.0: http://www.arduino.cc/en/Hacking/WiFiShieldFirmwareUpgrading  
 More: http://katrinaeg.com/arduino-wifi-firmware-upgrade.html  
-```
+```Shell
 $ cd wifishield/firmware/scripts  
 $ sudo sh ArduinoWifiShield_upgrade_mac.sh -a /Applications/Arduino.app/Contents/Resources/Java -f shield  
 ```
 
 # Dependencies
-The project uses the Arduino native SPI, WiFi and Wire libraries. And depends on ceveral external libraries that needs to be installed in your development environment. Make sure to clone into your sketchbook/libraries folder: 
+The project uses the Arduino native SPI, WiFi and Wire libraries. And depends on ceveral external libraries that needs to be installed in your development environment. Make sure to clone into your sketchbook/libraries folder:  
 https://github.com/CNMAT/OSC  
 https://code.google.com/p/arduino-new-ping/   
 https://github.com/adafruit/Adafruit_Sensor  
@@ -39,11 +39,11 @@ https://github.com/adafruit/Adafruit_9DOF
 https://github.com/adafruit/Adafruit_10DOF (alternative)  
 
 In the embedXcode Makefile the libraries are linked by these lines:  
-```
+```c++
 APP_LIBS_LIST = SPI WiFi Wire
 ```
 
-```
+```c++
 USER_LIBS_LIST = Adafruit_9DOF Adafruit_L3GD20_U Adafruit_LSM303DLHC Adafruit_Sensor OSC NewPing
 ```
 
@@ -109,34 +109,34 @@ In the setup() function in .ino file in the root folder the OSC address listing 
 # Workflow for setting up a sensor
 *	Connect the sensor to the Maplab board using JST connectors (Digital, Analog, I2C)
 *	Config.h / WifiCredentials: enter your network configuration
-```
+```c++
 char ssid[] = "MY_NETWORK_SSID";
 char passphrase[] = "MY_NETWORK_PASSWORD";
 ```
 *	Config.h / PinLayout: name your sensor and initialize its pin number
-```
+```c++
 namespace PinLayout {
 	const int8_t myAnalogSensor = A1;
 }
 ```
 * 	*.ino / declaration: declare the object for you new sensor
-```
+```c++
 SensorAnalog myAnalogSensor;
 ```
 * 	*.ino / setup(): setup your new sensor with an osc address and pin layout
-```
+```c++
 myAnalogSensor.setup("/mc/"+id+"myAnalogSensor", PinLayout::myAnalogSensor, INPUT);
 ```
 *	*.ino / setup(): broadcast your new sensor using OSC
-```
+```c++
 myAnalogSensor.broadcast(true);
 ```
 *	*.ino / setup() [optional]: set and map the range for the sensor
-```
+```c++
 myAnalogSensor.setRange(0,1024,0,100);
 ```
 *	*.ino / loop(): update the sensor each loop
-```
+```c++
 myAnalogSensor.loop();
 ```
 *	Use OSCulator, Isadora, Max or any other OSC receiving program to test if the data is sent
