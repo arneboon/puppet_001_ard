@@ -52,8 +52,16 @@ The WiFi module broadcasts OSC messages using the following port and ip:
 port: 1234 (standard isadora)  
 broadcast to local router (routing 255.255.255.255)  
 
-# Maplab board
-The software works in conjunction with the custom Maplab sensorkit board that was developed for the lab. It provides an easy infrastructure for connecting sensors using industry standard JST connections. For this particulair project it makes the data of the following sensors accessible over OSC on the local network:  
+# Maplab board connectors
+The software works in conjunction with the custom Maplab sensorkit board that was developed for the lab. It provides an easy infrastructure for connecting sensors using industry standard JST XH connectors.  
+* [JST XH headers](http://nl.rs-online.com/web/c/connectors/pcb-connectors/pcb-headers/?searchTerm=jst+xh)  
+* [JST XH sockets](http://nl.rs-online.com/web/c/connectors/pcb-connectors/pcb-connector-housings/?searchTerm=jst+xh)  
+* [JST XH crimps](http://nl.rs-online.com/web/c/connectors/pcb-connectors/pcb-connector-contacts/?searchTerm=jst+xh)  
+* [Crimptool](https://www.kiwi-electronics.nl/engineer-pa-09-jst-crimping-tool)  
+* [Ribbon flat cable](http://nl.rs-online.com/web/c/cables-wires/ribbon-flat-cable/flat-ribbon-cable/?searchTerm=ribbon+flat+cable)
+
+# Sensors
+For this particulair project it makes the data of the following sensors accessible over OSC on the local network:  
 * Analog Magnetic Field Sensor
 * Digital Magnetic Field Sensor
 * Sonar Distance Sensor
@@ -141,3 +149,24 @@ myAnalogSensor.loop();
 ```
 *	Use OSCulator, Isadora, Max or any other OSC receiving program to test if the data is sent
 
+# Maplab board hardware usage
+* Connect a usb A to B cable to the Arduino Mega and a charged powerbank 5V 1A
+* Push the ON button on the powerbank, the Arduino Mega will boot and its onboard power led turns on
+* The wifishield takes 10 seconds to find and connect to the network listed in the Config.h file
+* When the connection is succesfull the status led on the Maplab board will turn on and OSC sensor data is broadcasted
+* Verify the OSC sensor data is sent using an OSC client such as [OSCulator](http://www.osculator.net/), MaxMsp, Isadora
+* A fully charged powerbank of 2000 mAh provides the device an expected runtime of 6 hours
+* To turn off the device, just unplug the usb cable from the powerbank
+
+# Troubleshooting
+* If the status led does not turn on after 10 seconds: 
+ * check the Config.h file for correct wifi credentials
+ * check if the powerbank is charged
+* If no OSC data is received in the OSC client:
+ * check if the powerbank is charged
+ * check if the device is powered on
+ * check if the status led is turned on
+ * check if your host computer is on the same wifi network as the network the device connects to
+ * check if the Config.h file has correct wifi credentials
+ * check the OSC port number
+ 
